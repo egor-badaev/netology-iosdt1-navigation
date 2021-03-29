@@ -28,6 +28,10 @@
 		741ED10225FFFB8B00306193 /* PostDummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 741ED10125FFFB8B00306193 /* PostDummy.swift */; };
 		741EDFBB25670C5D00A13F46 /* PhotoGalleryData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 741EDFBA25670C5D00A13F46 /* PhotoGalleryData.swift */; };
 		741EDFC02567250600A13F46 /* PhotosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 741EDFBF2567250600A13F46 /* PhotosViewController.swift */; };
+		7429E59926124E73000DA30E /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7429E59826124E73000DA30E /* NetworkService.swift */; };
+		7429E59C26124F36000DA30E /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7429E59B26124F36000DA30E /* AppConfiguration.swift */; };
+		7429E5A326125DEB000DA30E /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7429E5A226125DEB000DA30E /* NetworkError.swift */; };
+		7429E5A626126578000DA30E /* Data+JSONPrettyPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7429E5A526126578000DA30E /* Data+JSONPrettyPrint.swift */; };
 		742C785B2554618200B352FF /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C785A2554618200B352FF /* ProfileHeaderView.swift */; };
 		742C785F255461C500B352FF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C785E255461C500B352FF /* ProfileViewController.swift */; };
 		742C7869255496BD00B352FF /* StatusTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C7868255496BD00B352FF /* StatusTextField.swift */; };
@@ -82,6 +86,10 @@
 		741ED10125FFFB8B00306193 /* PostDummy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostDummy.swift; sourceTree = "<group>"; };
 		741EDFBA25670C5D00A13F46 /* PhotoGalleryData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGalleryData.swift; sourceTree = "<group>"; };
 		741EDFBF2567250600A13F46 /* PhotosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosViewController.swift; sourceTree = "<group>"; };
+		7429E59826124E73000DA30E /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		7429E59B26124F36000DA30E /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
+		7429E5A226125DEB000DA30E /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		7429E5A526126578000DA30E /* Data+JSONPrettyPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+JSONPrettyPrint.swift"; sourceTree = "<group>"; };
 		742C785A2554618200B352FF /* ProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
 		742C785E255461C500B352FF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		742C7868255496BD00B352FF /* StatusTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTextField.swift; sourceTree = "<group>"; };
@@ -142,6 +150,7 @@
 		060782B0250CE27700A87020 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
+				7429E59726124E54000DA30E /* Services */,
 				74EAF6A125D1C37400F41122 /* Coordinator */,
 				743F39E325573D8600F77FE2 /* Feed */,
 				742C78592554614F00B352FF /* Profile */,
@@ -191,6 +200,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		7429E59726124E54000DA30E /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				7429E59826124E73000DA30E /* NetworkService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		742C78592554614F00B352FF /* Profile */ = {
 			isa = PBXGroup;
 			children = (
@@ -231,6 +248,9 @@
 				74756D692563DB87001D5099 /* AppConstants.swift */,
 				746F852525C9E698005C3026 /* AlertFactory.swift */,
 				74EDA72C25CC70A300B9EE42 /* UIViewController+Alert.swift */,
+				7429E59B26124F36000DA30E /* AppConfiguration.swift */,
+				7429E5A226125DEB000DA30E /* NetworkError.swift */,
+				7429E5A526126578000DA30E /* Data+JSONPrettyPrint.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -422,6 +442,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				74EAF6AF25D1D50400F41122 /* FeedCoordinator.swift in Sources */,
+				7429E5A626126578000DA30E /* Data+JSONPrettyPrint.swift in Sources */,
 				74972E012566DBD200B29277 /* PhotosTableViewCell.swift in Sources */,
 				741ED10225FFFB8B00306193 /* PostDummy.swift in Sources */,
 				742C7869255496BD00B352FF /* StatusTextField.swift in Sources */,
@@ -433,6 +454,7 @@
 				74B2B4CE2601529900C0293A /* VideoPlaylistProvider.swift in Sources */,
 				74A7A16625CDB4DA005D12DE /* PostWrapperView.swift in Sources */,
 				74EAF6A325D1C38700F41122 /* Coordinator.swift in Sources */,
+				7429E59C26124F36000DA30E /* AppConfiguration.swift in Sources */,
 				741124F02601392C00837B3C /* PlaylistProvider.swift in Sources */,
 				741124EE2601392C00837B3C /* AVControlButton.swift in Sources */,
 				74756D5F2563C319001D5099 /* LogInViewController.swift in Sources */,
@@ -446,11 +468,13 @@
 				746F851D25C9D8CE005C3026 /* CredentialsStore.swift in Sources */,
 				743F39E725573DD500F77FE2 /* PostButton.swift in Sources */,
 				741EDFC02567250600A13F46 /* PhotosViewController.swift in Sources */,
+				7429E59926124E73000DA30E /* NetworkService.swift in Sources */,
 				746F852625C9E698005C3026 /* AlertFactory.swift in Sources */,
 				060782C6250CEB0A00A87020 /* InfoViewController.swift in Sources */,
 				060782CA250CEE7200A87020 /* Post.swift in Sources */,
 				74FCEB10260914990095AFD7 /* RecorderViewController.swift in Sources */,
 				741124EF2601392C00837B3C /* AudioTrack.swift in Sources */,
+				7429E5A326125DEB000DA30E /* NetworkError.swift in Sources */,
 				74EAF6AA25D1C5D000F41122 /* ProfileCoordinator.swift in Sources */,
 				742C785B2554618200B352FF /* ProfileHeaderView.swift in Sources */,
 				741EDFBB25670C5D00A13F46 /* PhotoGalleryData.swift in Sources */,
