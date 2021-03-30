@@ -16,4 +16,8 @@ extension Data {
 
         return prettyPrintedString
     }
+    
+    func toObject() throws -> [String: Any]? {
+        return try JSONSerialization.jsonObject(with: self, options: .mutableContainers) as? [String: Any]
+    }
 }

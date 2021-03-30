@@ -31,7 +31,7 @@
 		7429E59926124E73000DA30E /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7429E59826124E73000DA30E /* NetworkService.swift */; };
 		7429E59C26124F36000DA30E /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7429E59B26124F36000DA30E /* AppConfiguration.swift */; };
 		7429E5A326125DEB000DA30E /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7429E5A226125DEB000DA30E /* NetworkError.swift */; };
-		7429E5A626126578000DA30E /* Data+JSONPrettyPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7429E5A526126578000DA30E /* Data+JSONPrettyPrint.swift */; };
+		7429E5A626126578000DA30E /* Data+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7429E5A526126578000DA30E /* Data+JSON.swift */; };
 		742C785B2554618200B352FF /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C785A2554618200B352FF /* ProfileHeaderView.swift */; };
 		742C785F255461C500B352FF /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C785E255461C500B352FF /* ProfileViewController.swift */; };
 		742C7869255496BD00B352FF /* StatusTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C7868255496BD00B352FF /* StatusTextField.swift */; };
@@ -45,6 +45,7 @@
 		74756D6A2563DB87001D5099 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74756D692563DB87001D5099 /* AppConstants.swift */; };
 		74756D6D2563E6FE001D5099 /* InputTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74756D6C2563E6FE001D5099 /* InputTextField.swift */; };
 		74756D702563E992001D5099 /* UIImage+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74756D6F2563E992001D5099 /* UIImage+Navigation.swift */; };
+		7484DA522613A333002CCD1C /* ToDoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7484DA512613A333002CCD1C /* ToDoModel.swift */; };
 		74972DFA25651F2900B29277 /* PostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74972DF925651F2900B29277 /* PostTableViewCell.swift */; };
 		74972E012566DBD200B29277 /* PhotosTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74972E002566DBD200B29277 /* PhotosTableViewCell.swift */; };
 		74A7A16625CDB4DA005D12DE /* PostWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A7A16525CDB4DA005D12DE /* PostWrapperView.swift */; };
@@ -89,7 +90,7 @@
 		7429E59826124E73000DA30E /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		7429E59B26124F36000DA30E /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		7429E5A226125DEB000DA30E /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
-		7429E5A526126578000DA30E /* Data+JSONPrettyPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+JSONPrettyPrint.swift"; sourceTree = "<group>"; };
+		7429E5A526126578000DA30E /* Data+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+JSON.swift"; sourceTree = "<group>"; };
 		742C785A2554618200B352FF /* ProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
 		742C785E255461C500B352FF /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		742C7868255496BD00B352FF /* StatusTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTextField.swift; sourceTree = "<group>"; };
@@ -102,6 +103,7 @@
 		74756D692563DB87001D5099 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		74756D6C2563E6FE001D5099 /* InputTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextField.swift; sourceTree = "<group>"; };
 		74756D6F2563E992001D5099 /* UIImage+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Navigation.swift"; sourceTree = "<group>"; };
+		7484DA512613A333002CCD1C /* ToDoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoModel.swift; sourceTree = "<group>"; };
 		74972DF925651F2900B29277 /* PostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTableViewCell.swift; sourceTree = "<group>"; };
 		74972E002566DBD200B29277 /* PhotosTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosTableViewCell.swift; sourceTree = "<group>"; };
 		74A7A16525CDB4DA005D12DE /* PostWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostWrapperView.swift; sourceTree = "<group>"; };
@@ -250,7 +252,7 @@
 				74EDA72C25CC70A300B9EE42 /* UIViewController+Alert.swift */,
 				7429E59B26124F36000DA30E /* AppConfiguration.swift */,
 				7429E5A226125DEB000DA30E /* NetworkError.swift */,
-				7429E5A526126578000DA30E /* Data+JSONPrettyPrint.swift */,
+				7429E5A526126578000DA30E /* Data+JSON.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -300,6 +302,7 @@
 			children = (
 				741ED10125FFFB8B00306193 /* PostDummy.swift */,
 				74A7A16F25CDC7A1005D12DE /* FeedModel.swift */,
+				7484DA512613A333002CCD1C /* ToDoModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -442,7 +445,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				74EAF6AF25D1D50400F41122 /* FeedCoordinator.swift in Sources */,
-				7429E5A626126578000DA30E /* Data+JSONPrettyPrint.swift in Sources */,
+				7429E5A626126578000DA30E /* Data+JSON.swift in Sources */,
 				74972E012566DBD200B29277 /* PhotosTableViewCell.swift in Sources */,
 				741ED10225FFFB8B00306193 /* PostDummy.swift in Sources */,
 				742C7869255496BD00B352FF /* StatusTextField.swift in Sources */,
@@ -458,6 +461,7 @@
 				741124F02601392C00837B3C /* PlaylistProvider.swift in Sources */,
 				741124EE2601392C00837B3C /* AVControlButton.swift in Sources */,
 				74756D5F2563C319001D5099 /* LogInViewController.swift in Sources */,
+				7484DA522613A333002CCD1C /* ToDoModel.swift in Sources */,
 				74EAF6A625D1C42900F41122 /* MainCoordinator.swift in Sources */,
 				060782B2250CE27700A87020 /* AppDelegate.swift in Sources */,
 				74756D702563E992001D5099 /* UIImage+Navigation.swift in Sources */,

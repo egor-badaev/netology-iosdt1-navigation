@@ -12,4 +12,5 @@ enum AppConstants {
     static let accentColor = "AccentColor"
     static let margin: CGFloat = 16.0
     static let feedViewControllerTitle = "Feed"
+    static let animationDuration: TimeInterval = 0.3
 }

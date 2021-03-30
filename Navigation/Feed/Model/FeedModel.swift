@@ -19,8 +19,9 @@ struct FeedModel {
 
     private init() {
         var posts = [PostDummy]()
-        for index in 0...Int.random(in: 1...9) {
-            posts.append(PostDummy(title: "Пост \(index + 1)"))
+        for index in 1...Int.random(in: 2...10) {
+            posts.append(PostDummy(title: "Пост \(index)",
+                                   toDoUrl: "https://jsonplaceholder.typicode.com/todos/\(index)"))
         }
         self.posts = posts
     }
