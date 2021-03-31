@@ -77,11 +77,7 @@ struct Planet: Decodable {
         edited = try Planet.decodeDateString(with: container, forKey: .edited)
         
         let urlString = try container.decode(String.self, forKey: .url)
-        if let url = URL(string: urlString) {
-            self.url = url
-        } else {
-            throw NetworkError.invalidURL
-        }
+        url = try urlString.toURL()
     }
     
     // MARK: - Helper methods
@@ -89,26 +85,15 @@ struct Planet: Decodable {
         let urlStrings = try container.decode([String].self, forKey: key)
         var urls = [URL]()
         try urlStrings.forEach { urlString in
-            if let url = URL(string: urlString) {
-                urls.append(url)
-            } else {
-                print("Cannot create URL from string")
-                throw NetworkError.invalidURL
-            }
+            let url = try urlString.toURL()
+            urls.append(url)
         }
         return urls
     }
     
     private static func decodeDateString(with container: KeyedDecodingContainer<CodingKeys>, forKey key: CodingKeys) throws -> Date {
         let dateString = try container.decode(String.self, forKey: key)
-        let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [.withInternetDateTime, .withDashSeparatorInDate, .withColonSeparatorInTime, .withFractionalSeconds]
-        
-        guard let date = dateFormatter.date(from: dateString) else {
-            print("Cannot create date from string")
-            throw NetworkError.invalidData
-        }
-            
+        let date = try dateString.toISO8601Date()
         return date
     }
     
@@ -119,6 +104,9 @@ struct Planet: Decodable {
     }
     
     private static func decodeIntFromString(with container: KeyedDecodingContainer<CodingKeys>, forKey key: CodingKeys) throws -> Int? {
+        if let number = try? container.decode(Int.self, forKey: key) {
+            return number
+        }
         let string = try container.decode(String.self, forKey: key)
         return Int(string)
     }

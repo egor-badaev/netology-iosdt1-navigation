@@ -40,6 +40,7 @@
 		742C830C2613F7CD00D28FB3 /* Double+Pluralization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C83082613F7CD00D28FB3 /* Double+Pluralization.swift */; };
 		742C830D2613F7CD00D28FB3 /* PluralizableString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C83092613F7CD00D28FB3 /* PluralizableString.swift */; };
 		742C830E2613F7CD00D28FB3 /* Pluralization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C830A2613F7CD00D28FB3 /* Pluralization.swift */; };
+		742C8311261457D500D28FB3 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C8310261457D500D28FB3 /* StringExtensions.swift */; };
 		743F39E725573DD500F77FE2 /* PostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743F39E625573DD500F77FE2 /* PostButton.swift */; };
 		746F84F725C89E6D005C3026 /* iOSIntPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 746F84F625C89E6D005C3026 /* iOSIntPackage */; };
 		746F851D25C9D8CE005C3026 /* CredentialsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746F851C25C9D8CE005C3026 /* CredentialsStore.swift */; };
@@ -104,6 +105,7 @@
 		742C83082613F7CD00D28FB3 /* Double+Pluralization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Double+Pluralization.swift"; sourceTree = "<group>"; };
 		742C83092613F7CD00D28FB3 /* PluralizableString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluralizableString.swift; sourceTree = "<group>"; };
 		742C830A2613F7CD00D28FB3 /* Pluralization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pluralization.swift; sourceTree = "<group>"; };
+		742C8310261457D500D28FB3 /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		743F39E625573DD500F77FE2 /* PostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostButton.swift; sourceTree = "<group>"; };
 		746F851C25C9D8CE005C3026 /* CredentialsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsStore.swift; sourceTree = "<group>"; };
 		746F852125C9E0D1005C3026 /* CredentialsVerificator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsVerificator.swift; sourceTree = "<group>"; };
@@ -275,6 +277,7 @@
 				7429E59B26124F36000DA30E /* AppConfiguration.swift */,
 				7429E5A226125DEB000DA30E /* NetworkError.swift */,
 				7429E5A526126578000DA30E /* Data+JSON.swift */,
+				742C8310261457D500D28FB3 /* StringExtensions.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -500,6 +503,7 @@
 				741EDFC02567250600A13F46 /* PhotosViewController.swift in Sources */,
 				7429E59926124E73000DA30E /* NetworkService.swift in Sources */,
 				746F852625C9E698005C3026 /* AlertFactory.swift in Sources */,
+				742C8311261457D500D28FB3 /* StringExtensions.swift in Sources */,
 				060782C6250CEB0A00A87020 /* InfoViewController.swift in Sources */,
 				060782CA250CEE7200A87020 /* Post.swift in Sources */,
 				74FCEB10260914990095AFD7 /* RecorderViewController.swift in Sources */,
