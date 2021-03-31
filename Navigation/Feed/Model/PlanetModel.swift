@@ -17,7 +17,7 @@ struct Planet: Decodable {
     let diameter: Int?
     let climate: [ClimateType]
     let gravity: Double?
-    let terrain: String?
+    let terrain: [String]
     let surfaceWater: Int?
     let population: Int?
     let residents: [URL]
@@ -65,7 +65,12 @@ struct Planet: Decodable {
         let gravityString = try container.decode(String.self, forKey: .gravity)
         gravity = Double(gravityString)
         
-        terrain = try Planet.decodeNilOrString(with: container, forKey: .terrain)
+        var terrainArray = [String]()
+        if let terrains = try Planet.decodeNilOrString(with: container, forKey: .terrain) {
+            let terrainsArray = terrains.split(separator: ",")
+            terrainArray = terrainsArray.map { $0.trimmingCharacters(in: .whitespaces) }
+        }
+        terrain = terrainArray
         
         surfaceWater = try Planet.decodeIntFromString(with: container, forKey: .surfaceWater)
         population = try Planet.decodeIntFromString(with: container, forKey: .population)
