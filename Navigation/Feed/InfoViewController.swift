@@ -12,7 +12,8 @@ class InfoViewController: UIViewController {
 
     // MARK: - Properties
     
-    var infoUrlSting: String
+    var toDoUrlSting: String
+    var planetUrlString: String
     weak var coordinator: FeedCoordinator?
     
     private var loader: UIActivityIndicatorView = {
@@ -30,6 +31,17 @@ class InfoViewController: UIViewController {
         title.textAlignment = .center
         
         return title
+    }()
+    
+    private var planetOrbitalPeriodLabel: UILabel = {
+        let label = UILabel()
+        
+        label.toAutoLayout()
+        label.font = .systemFont(ofSize: 14)
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        
+        return label
     }()
     
     private lazy var alertButton: UIButton = {
@@ -50,6 +62,7 @@ class InfoViewController: UIViewController {
         containerView.spacing = AppConstants.margin
         
         containerView.addArrangedSubview(postTitleLabel)
+        containerView.addArrangedSubview(planetOrbitalPeriodLabel)
         containerView.addArrangedSubview(alertButton)
         
         containerView.alpha = 0.0
@@ -57,10 +70,15 @@ class InfoViewController: UIViewController {
         return containerView
     }()
     
+    private var toDoDataTask: URLSessionDataTask?
+    private var planetDataTask: URLSessionDataTask?
+    
     // MARK: - Life cycle
     
-    init(url: String) {
-        infoUrlSting = url
+    init(toDoUrl: String, planetUrl: String) {
+        toDoUrlSting = toDoUrl
+        planetUrlString = planetUrl
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -73,13 +91,14 @@ class InfoViewController: UIViewController {
 
         setupUI()
         
-        guard let url = URL(string: infoUrlSting) else {
+        guard let toDoUrl = URL(string: toDoUrlSting),
+              let planetUrl = URL(string: planetUrlString) else {
             print("Can't create URL from the string provided")
             coordinator?.showAlertAndClose(self)
             return
         }
         
-        NetworkService.startDataTast(with: url) { [weak self] result in
+        toDoDataTask = NetworkService.makeDataTask(with: toDoUrl) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .failure(let error):
@@ -103,6 +122,46 @@ class InfoViewController: UIViewController {
                 }
             }
         }
+        toDoDataTask?.resume()
+        
+        planetDataTask = NetworkService.makeDataTask(with: planetUrl, completion: { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .failure(let error):
+                print("NetworkService failure: \(error.localizedDescription)")
+                self.coordinator?.showAlertAndClose(self, title: "Ошибка", message: error.localizedDescription)
+            case .success(let (_, data)):
+                do {
+                    let planet = try JSONDecoder().decode(Planet.self, from: data)
+                    
+                    var name, period: String
+                    
+                    if let planetName = planet.name {
+                        name = "планеты \"\(planetName)\""
+                    } else {
+                        name = "неизвестной планеты"
+                    }
+                    
+                    if let planetPeriod = planet.orbitalPeriod {
+                        let days = planetPeriod.pluralForm(of: PluralizableString(one: "день", few: "дня", many: "дней"))
+                        period = "составляет \(days)"
+                    } else {
+                        period = "неизвестен"
+                    }
+                                        
+                    DispatchQueue.main.async {
+                        self.planetOrbitalPeriodLabel.text = "Период обращения \(name) по своей орбите \(period)"
+                        self.displayUI()
+                    }
+                } catch {
+                    print("Decoding failed: \(error)")
+                    self.coordinator?.showAlertAndClose(self, title: "Ошибка", message: "Возникла ошибка при распознавании данных")
+                }
+            }
+        })
+        
+        planetDataTask?.resume()
     }
     
     // MARK: - Private methods
@@ -129,6 +188,13 @@ class InfoViewController: UIViewController {
     }
 
     private func displayUI() {
+        
+        guard toDoDataTask?.state != .running,
+              planetDataTask?.state != .running else {
+            print("Some tasks still running")
+            return
+        }
+
         UIView.animate(withDuration: AppConstants.animationDuration) {
             self.loader.alpha = 0.0
         } completion: { success in
