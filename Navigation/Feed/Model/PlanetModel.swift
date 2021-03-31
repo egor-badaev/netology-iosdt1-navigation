@@ -10,6 +10,14 @@ import Foundation
 
 struct Planet: Decodable {
     
+    // MARK: - Custom types
+    typealias Gravity = Double
+
+    enum ClimateType: String {
+        case arid, temperate, tropical, frozen, murky, windy, hot, frigid, humid, moist, polluted, superheated, subartic, artic, rocky
+        case artificialTemperate = "artificial temperate"
+    }
+    
     // MARK: - Properties
     let name: String?
     let rotationPeriod: Int?
@@ -28,13 +36,6 @@ struct Planet: Decodable {
     
     // MARK: - Helpers
     private static let nilKey = "unknown"
-    
-    enum ClimateType: String {
-        case arid, temperate, tropical, frozen, murky, windy, hot, frigid, humid, moist, polluted, superheated, subartic, artic, rocky
-        case artificialTemperate = "artificial temperate"
-    }
-    
-    typealias Gravity = Double
     
     // MARK: - CodingKeys
     private enum CodingKeys: String, CodingKey {
