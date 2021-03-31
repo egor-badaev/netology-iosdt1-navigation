@@ -16,7 +16,7 @@ struct Planet: Decodable {
     let orbitalPeriod: Int?
     let diameter: Int?
     let climate: [ClimateType]
-    let gravity: Double?
+    let gravity: Gravity?
     let terrain: [String]
     let surfaceWater: Int?
     let population: Int?
@@ -33,6 +33,8 @@ struct Planet: Decodable {
         case arid, temperate, tropical, frozen, murky, windy, hot, frigid, humid, moist, polluted, superheated, subartic, artic, rocky
         case artificialTemperate = "artificial temperate"
     }
+    
+    typealias Gravity = Double
     
     // MARK: - CodingKeys
     private enum CodingKeys: String, CodingKey {
@@ -63,7 +65,7 @@ struct Planet: Decodable {
         climate = climateArray
         
         let gravityString = try container.decode(String.self, forKey: .gravity)
-        gravity = Double(gravityString)
+        gravity = gravityString.toGravity()
         
         var terrainArray = [String]()
         if let terrains = try Planet.decodeNilOrString(with: container, forKey: .terrain) {
@@ -114,5 +116,25 @@ struct Planet: Decodable {
         }
         let string = try container.decode(String.self, forKey: key)
         return Int(string)
+    }
+}
+
+// MARK: - Gravity type extensions
+
+extension Planet.Gravity {
+    var humanReadable: String {
+        return "\(self) standard"
+    }
+}
+
+fileprivate extension String {
+    func toGravity() -> Planet.Gravity? {
+        let components = self.split(separator: " ")
+        guard let string = components.first,
+              let number = Double(string) else {
+            print("Cannot convert string to gravity")
+            return nil
+        }
+        return number
     }
 }
