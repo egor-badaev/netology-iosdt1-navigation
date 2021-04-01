@@ -10,11 +10,13 @@ import UIKit
 
 class InfoViewController: UIViewController {
 
-    // MARK: - Properties
+    // MARK: - Public properties
     
     var toDoUrlSting: String
     var planetUrlString: String
     weak var coordinator: FeedCoordinator?
+    
+    // MARK: - Views
     
     private var loader: UIActivityIndicatorView = {
         return ActivityIndicatorFactory.makeDefaultLoader()
@@ -108,6 +110,8 @@ class InfoViewController: UIViewController {
         return label
     }()
     
+    // MARK: - Private properties
+    
     private var toDoDataTask: URLSessionDataTask?
     private var planetDataTask: URLSessionDataTask?
     private var residents: [Person] = []
@@ -130,7 +134,89 @@ class InfoViewController: UIViewController {
         super.viewDidLoad()
 
         setupUI()
+        fetchData()
+    }
+    
+    // MARK: - UI methods
+    
+    private func setupUI() {
+        view.backgroundColor = .systemYellow
         
+        view.addSubview(containerView)
+        view.addSubview(loader)
+        view.addSubview(residentsTableView)
+        view.addSubview(tableLoader)
+        view.addSubview(noResidentsLabel)
+        
+        let safeArea = view.safeAreaLayoutGuide
+        
+        let constraints = [
+            containerView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: AppConstants.margin),
+            containerView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -AppConstants.margin),
+            containerView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: AppConstants.margin),
+            
+            loader.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            loader.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+            
+            residentsTableView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: AppConstants.margin),
+            residentsTableView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -AppConstants.margin),
+            residentsTableView.topAnchor.constraint(equalTo: containerView.bottomAnchor, constant: AppConstants.margin),
+            residentsTableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor),
+            
+            tableLoader.centerXAnchor.constraint(equalTo: residentsTableView.centerXAnchor),
+            tableLoader.centerYAnchor.constraint(equalTo: residentsTableView.centerYAnchor),
+            
+            noResidentsLabel.centerYAnchor.constraint(equalTo: residentsTableView.centerYAnchor),
+            noResidentsLabel.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: AppConstants.margin),
+            noResidentsLabel.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -AppConstants.margin)
+        ]
+        
+        NSLayoutConstraint.activate(constraints)
+    
+        loader.startAnimating()
+        tableLoader.startAnimating()
+        
+        UILabel.appearance(whenContainedInInstancesOf: [UITableViewHeaderFooterView.self]).font = .systemFont(ofSize: 14, weight: .semibold)
+
+    }
+
+    private func displayUI() {
+        
+        guard toDoDataTask?.state != .running,
+              planetDataTask?.state != .running else {
+            print("Some tasks still running")
+            return
+        }
+
+        show(view: containerView, andHide: loader)
+    }
+    
+    private func show(view: UIView, andHide loader: UIActivityIndicatorView) {
+        UIView.animate(withDuration: AppConstants.animationDuration) {
+            loader.alpha = 0.0
+        } completion: { success in
+            if success {
+                loader.stopAnimating()
+                UIView.animate(withDuration: AppConstants.animationDuration) {
+                    view.alpha = 1.0
+                }
+            }
+        }
+    }
+    
+    private func showResidentsTableIfReady() {
+        guard activeDataTasks == 0 else { return }
+        print("Reloading TableView")
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.residentsTableView.reloadData()
+            self.show(view: self.residentsTableView, andHide: self.tableLoader)
+        }
+    }
+
+    // MARK: - Data methods
+    
+    private func fetchData() {
         guard let toDoUrl = URL(string: toDoUrlSting),
               let planetUrl = URL(string: planetUrlString) else {
             print("Can't create URL from the string provided")
@@ -203,75 +289,7 @@ class InfoViewController: UIViewController {
                 }
             }
         })
-        
         planetDataTask?.resume()
-    }
-    
-    // MARK: - Private methods
-    
-    private func setupUI() {
-        view.backgroundColor = .systemYellow
-        
-        view.addSubview(containerView)
-        view.addSubview(loader)
-        view.addSubview(residentsTableView)
-        view.addSubview(tableLoader)
-        view.addSubview(noResidentsLabel)
-        
-        let safeArea = view.safeAreaLayoutGuide
-        
-        let constraints = [
-            containerView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: AppConstants.margin),
-            containerView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -AppConstants.margin),
-            containerView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: AppConstants.margin),
-            
-            loader.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            loader.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            
-            residentsTableView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: AppConstants.margin),
-            residentsTableView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -AppConstants.margin),
-            residentsTableView.topAnchor.constraint(equalTo: containerView.bottomAnchor, constant: AppConstants.margin),
-            residentsTableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor),
-            
-            tableLoader.centerXAnchor.constraint(equalTo: residentsTableView.centerXAnchor),
-            tableLoader.centerYAnchor.constraint(equalTo: residentsTableView.centerYAnchor),
-            
-            noResidentsLabel.centerYAnchor.constraint(equalTo: residentsTableView.centerYAnchor),
-            noResidentsLabel.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: AppConstants.margin),
-            noResidentsLabel.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -AppConstants.margin)
-        ]
-        
-        NSLayoutConstraint.activate(constraints)
-    
-        loader.startAnimating()
-        tableLoader.startAnimating()
-        
-        UILabel.appearance(whenContainedInInstancesOf: [UITableViewHeaderFooterView.self]).font = .systemFont(ofSize: 14, weight: .semibold)
-
-    }
-
-    private func displayUI() {
-        
-        guard toDoDataTask?.state != .running,
-              planetDataTask?.state != .running else {
-            print("Some tasks still running")
-            return
-        }
-
-        show(view: containerView, andHide: loader)
-    }
-    
-    private func show(view: UIView, andHide loader: UIActivityIndicatorView) {
-        UIView.animate(withDuration: AppConstants.animationDuration) {
-            loader.alpha = 0.0
-        } completion: { success in
-            if success {
-                loader.stopAnimating()
-                UIView.animate(withDuration: AppConstants.animationDuration) {
-                    view.alpha = 1.0
-                }
-            }
-        }
     }
     
     private func fetchResidents(from urls: [URL]) {
@@ -304,16 +322,6 @@ class InfoViewController: UIViewController {
                     }
                 }
             }
-        }
-    }
-    
-    private func showResidentsTableIfReady() {
-        guard activeDataTasks == 0 else { return }
-        print("Reloading TableView")
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.residentsTableView.reloadData()
-            self.show(view: self.residentsTableView, andHide: self.tableLoader)
         }
     }
     
