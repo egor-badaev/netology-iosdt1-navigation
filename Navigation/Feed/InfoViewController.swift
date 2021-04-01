@@ -116,6 +116,7 @@ class InfoViewController: UIViewController {
     private var planetDataTask: URLSessionDataTask?
     private var residents: [Person] = []
     private var activeDataTasks = 0
+    private var planetName: String = ""
     
     // MARK: - Life cycle
     
@@ -160,8 +161,8 @@ class InfoViewController: UIViewController {
             
             residentsTableView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: AppConstants.margin),
             residentsTableView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -AppConstants.margin),
-            residentsTableView.topAnchor.constraint(equalTo: containerView.bottomAnchor, constant: AppConstants.margin),
-            residentsTableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor),
+            residentsTableView.topAnchor.constraint(equalTo: containerView.bottomAnchor),
+            residentsTableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -AppConstants.margin),
             
             tableLoader.centerXAnchor.constraint(equalTo: residentsTableView.centerXAnchor),
             tableLoader.centerYAnchor.constraint(equalTo: residentsTableView.centerYAnchor),
@@ -176,8 +177,6 @@ class InfoViewController: UIViewController {
         loader.startAnimating()
         tableLoader.startAnimating()
         
-        UILabel.appearance(whenContainedInInstancesOf: [UITableViewHeaderFooterView.self]).font = .systemFont(ofSize: 14, weight: .semibold)
-
     }
 
     private func displayUI() {
@@ -261,12 +260,12 @@ class InfoViewController: UIViewController {
                 do {
                     let planet = try JSONDecoder().decode(Planet.self, from: data)
                     
-                    var name, period: String
+                    var period: String
                     
                     if let planetName = planet.name {
-                        name = "планеты \"\(planetName)\""
+                        self.planetName = "планеты \"\(planetName)\""
                     } else {
-                        name = "неизвестной планеты"
+                        self.planetName = "неизвестной планеты"
                     }
                     
                     if let planetPeriod = planet.orbitalPeriod {
@@ -277,7 +276,7 @@ class InfoViewController: UIViewController {
                     }
                                         
                     DispatchQueue.main.async {
-                        self.planetOrbitalPeriodLabel.text = "Период обращения \(name) по своей орбите \(period)"
+                        self.planetOrbitalPeriodLabel.text = "Период обращения \(self.planetName) по своей орбите \(period)"
                         self.displayUI()
                     }
 
@@ -354,7 +353,7 @@ extension InfoViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard section == 0 else { return .zero }
-        return 45.0
+        return 44.0
     }
 }
 
@@ -363,13 +362,15 @@ extension InfoViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard section == 0 else { return nil }
         let headerView = UITableViewHeaderFooterView()
-        if #available(iOS 14.0, *) {
-            headerView.backgroundConfiguration = .clear()
-        } else {
-            headerView.backgroundView?.backgroundColor = .clear
-        }
-        headerView.textLabel?.text = "Персонажи на планете"
-        headerView.textLabel?.textColor = .black
+        headerView.contentView.backgroundColor = .systemYellow
+        headerView.textLabel?.text = "Резиденты \(planetName)"
         return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard let headerView = view as? UITableViewHeaderFooterView,
+              let textLabel = headerView.textLabel else { return }
+        textLabel.textColor = .black
+        textLabel.font = .systemFont(ofSize: 14, weight: .semibold)
     }
 }
