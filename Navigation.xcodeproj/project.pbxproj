@@ -41,6 +41,8 @@
 		742C830D2613F7CD00D28FB3 /* PluralizableString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C83092613F7CD00D28FB3 /* PluralizableString.swift */; };
 		742C830E2613F7CD00D28FB3 /* Pluralization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C830A2613F7CD00D28FB3 /* Pluralization.swift */; };
 		742C8311261457D500D28FB3 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C8310261457D500D28FB3 /* StringExtensions.swift */; };
+		742C83142614CE4600D28FB3 /* PersonModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C83132614CE4600D28FB3 /* PersonModel.swift */; };
+		742C83172615B8F800D28FB3 /* ActivityIndicatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C83162615B8F800D28FB3 /* ActivityIndicatorFactory.swift */; };
 		743F39E725573DD500F77FE2 /* PostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743F39E625573DD500F77FE2 /* PostButton.swift */; };
 		746F84F725C89E6D005C3026 /* iOSIntPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 746F84F625C89E6D005C3026 /* iOSIntPackage */; };
 		746F851D25C9D8CE005C3026 /* CredentialsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746F851C25C9D8CE005C3026 /* CredentialsStore.swift */; };
@@ -106,6 +108,8 @@
 		742C83092613F7CD00D28FB3 /* PluralizableString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluralizableString.swift; sourceTree = "<group>"; };
 		742C830A2613F7CD00D28FB3 /* Pluralization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pluralization.swift; sourceTree = "<group>"; };
 		742C8310261457D500D28FB3 /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
+		742C83132614CE4600D28FB3 /* PersonModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonModel.swift; sourceTree = "<group>"; };
+		742C83162615B8F800D28FB3 /* ActivityIndicatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorFactory.swift; sourceTree = "<group>"; };
 		743F39E625573DD500F77FE2 /* PostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostButton.swift; sourceTree = "<group>"; };
 		746F851C25C9D8CE005C3026 /* CredentialsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsStore.swift; sourceTree = "<group>"; };
 		746F852125C9E0D1005C3026 /* CredentialsVerificator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsVerificator.swift; sourceTree = "<group>"; };
@@ -278,6 +282,7 @@
 				7429E5A226125DEB000DA30E /* NetworkError.swift */,
 				7429E5A526126578000DA30E /* Data+JSON.swift */,
 				742C8310261457D500D28FB3 /* StringExtensions.swift */,
+				742C83162615B8F800D28FB3 /* ActivityIndicatorFactory.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -329,6 +334,7 @@
 				74A7A16F25CDC7A1005D12DE /* FeedModel.swift */,
 				7484DA512613A333002CCD1C /* ToDoModel.swift */,
 				742C83032613C8C400D28FB3 /* PlanetModel.swift */,
+				742C83132614CE4600D28FB3 /* PersonModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -470,6 +476,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				742C83142614CE4600D28FB3 /* PersonModel.swift in Sources */,
 				74EAF6AF25D1D50400F41122 /* FeedCoordinator.swift in Sources */,
 				7429E5A626126578000DA30E /* Data+JSON.swift in Sources */,
 				742C830B2613F7CD00D28FB3 /* Int+Pluralization.swift in Sources */,
@@ -488,6 +495,7 @@
 				7429E59C26124F36000DA30E /* AppConfiguration.swift in Sources */,
 				741124F02601392C00837B3C /* PlaylistProvider.swift in Sources */,
 				741124EE2601392C00837B3C /* AVControlButton.swift in Sources */,
+				742C83172615B8F800D28FB3 /* ActivityIndicatorFactory.swift in Sources */,
 				74756D5F2563C319001D5099 /* LogInViewController.swift in Sources */,
 				7484DA522613A333002CCD1C /* ToDoModel.swift in Sources */,
 				74EAF6A625D1C42900F41122 /* MainCoordinator.swift in Sources */,
