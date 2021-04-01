@@ -11,6 +11,7 @@ import UIKit
 final class FeedCoordinator: Coordinator {
     var childCoordinators: [Coordinator]    
     var navigationController: UINavigationController
+    var selectedPostIndex: Int?
     
     init(navigationController: UINavigationController) {
         childCoordinators = []
@@ -29,27 +30,33 @@ final class FeedCoordinator: Coordinator {
         
         let post = FeedModel.shared.posts[index]
         postViewController.title = post.title
+        selectedPostIndex = index
 
         navigationController.pushViewController(postViewController, animated: true)
     }
     
     func showPostInfo() {
-        let infoViewController = InfoViewController()
+        guard let selectedPostIndex = selectedPostIndex else {
+            guard let topViewController = navigationController.topViewController else {
+                return
+            }
+            showAlert(presentedOn: topViewController, title: "Ошибка", message: "Невозможно отобразить пост")
+            return
+        }
+        let toDoUrl = FeedModel.shared.posts[selectedPostIndex].toDoUrl
+        let planetUrl = FeedModel.shared.posts[selectedPostIndex].planetUrl
+        let infoViewController = InfoViewController(toDoUrl: toDoUrl, planetUrl: planetUrl)
         infoViewController.coordinator = self
         navigationController.present(infoViewController, animated: true, completion: nil)
     }
     
     func showDeletePostAlert(presentedOn viewController: UIViewController) {
-        let alertController = UIAlertController(title: "Удалить пост?", message: "Пост нельзя будет восстановить", preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "Отмена", style: .default) { _ in
             print("Отмена")
         }
         let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { _ in
             print("Удалить")
         }
-        alertController.addAction(cancelAction)
-        alertController.addAction(deleteAction)
-        
-        viewController.present(alertController, animated: true, completion: nil)
+        self.showAlert(presentedOn: viewController, title: "Удалить пост?", message: "Пост нельзя будет восстановить", actions: [cancelAction, deleteAction])
     }
 }

@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let apiUrl = baseUrl.appendingPathComponent(appConfiguration.rawValue)
         print("🟢 Fetching data from \(apiUrl)")
                 
-        NetworkService.startDataTast(with: apiUrl) { result in
+        NetworkService.startDataTask(with: apiUrl) { result in
 
             switch result {
             case .failure(let error):

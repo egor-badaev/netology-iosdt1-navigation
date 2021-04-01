@@ -8,4 +8,6 @@
 
 struct PostDummy {
     let title: String
+    let toDoUrl: String
+    let planetUrl: String
 }

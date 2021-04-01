@@ -9,8 +9,8 @@
 import Foundation
 
 struct NetworkService {
-    static func startDataTast(with url: URL, completion: ((Result<(HTTPURLResponse, Data), Error>) -> Void)? = nil) {
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
+    static func makeDataTask(with url: URL, completion: ((Result<(HTTPURLResponse, Data), Error>) -> Void)? = nil) -> URLSessionDataTask {
+        return URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let error = error {
                 completion?(.failure(error))
                 return
@@ -26,7 +26,11 @@ struct NetworkService {
             
             completion?(.success((httpURLResponse, data)))
             
-        }.resume()
-        
+        }
+    }
+    
+    static func startDataTask(with url: URL, completion: ((Result<(HTTPURLResponse, Data), Error>) -> Void)? = nil) {
+        let dataTask = NetworkService.makeDataTask(with: url, completion: completion)
+        dataTask.resume()
     }
 }
