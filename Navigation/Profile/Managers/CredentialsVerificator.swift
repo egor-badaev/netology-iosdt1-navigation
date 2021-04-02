@@ -7,6 +7,27 @@
 //
 
 import Foundation
+import Firebase
+
+enum CredentialsError: LocalizedError {
+    case emptyLogin
+    case emptyPassword
+    case unknown
+    
+    var errorDescription: String? {
+        switch self {
+        case .emptyLogin:
+            return "Логин не может быть пустым"
+        case .emptyPassword:
+            return "Пароль не может быть пустым"
+        case .unknown:
+            return "Произошла неизвестная ошибка"
+        }
+    }
+}
+
+typealias CredentialsVerificationCompletionBlock = (Result<Bool, Error>) -> Void
+
 
 class CredentialsVerificator: LoginViewControllerDelegate {
     
@@ -40,31 +61,75 @@ class CredentialsVerificator: LoginViewControllerDelegate {
     /**
      Verifies credentials stored previously
      
-     - returns: `true` if both stored credentials are correct, `false` otherwise
-     
      - parameters:
         - loginController: a source controller which provides data
+        - completion: returns `failure(error)` if con't allow login, `success(true)` if should allow login and `success(false)` if can register a new user
      
      - important: This function will issue an alert to user if there is an error.
      
      */
-    func loginControllerShouldAllowLogin(_ loginController: LogInViewController) -> Bool {
+    func loginControllerDidValidateCredentials(_ loginController: LogInViewController, completion: @escaping CredentialsVerificationCompletionBlock) {
         guard let login = self.login,
               !login.isEmpty else {
-            loginController.presentErrorAlert("Логин не может быть пустым")
-            return false
+            completion(.failure(CredentialsError.emptyLogin))
+            return
         }
         guard let password = self.password,
               !password.isEmpty else {
-            loginController.presentErrorAlert("Пароль не может быть пустым")
-            return false
+            completion(.failure(CredentialsError.emptyPassword))
+            return
         }
 
-        if (!CredentialsStore.shared.credentialsAreCorrect(withLogin: login, andPassword: password)) {
-            loginController.presentErrorAlert("Указанная комбинация логина и пароля не найдена")
-            return false
+        Auth.auth().signIn(withEmail: login, password: password) { (result, error) in
+            
+            if let error = error as NSError?,
+               let code = AuthErrorCode(rawValue: error.code) {
+                switch code {
+                case .userNotFound:
+                    completion(.success(false))
+                    return
+                default:
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            completion(.success(true))
+        }
+    }
+    
+    /**
+     Registers a new user
+     
+     - parameters:
+        - loginController: a source controller which provides data
+        - completion: returns `failure(error)` if con't allow login, `success(true)` if should allow login and `success(false)` if can register a new user
+     
+     - important: This function will issue an alert to user if there is an error.
+     
+     */
+    func loginControllerDidRegisterUser(_ loginController: LogInViewController, completion: @escaping CredentialsVerificationCompletionBlock) {
+        guard let login = self.login,
+              !login.isEmpty else {
+            completion(.failure(CredentialsError.emptyLogin))
+            return
         }
         
-        return true
+        guard let password = self.password,
+              !password.isEmpty else {
+            completion(.failure(CredentialsError.emptyPassword))
+            return
+        }
+        
+        Auth.auth().createUser(withEmail: login, password: password) { (result, error) in
+            if let error = error as NSError?,
+               let code = AuthErrorCode(rawValue: error.code) {
+                print(error)
+                completion(.failure(error))
+                return
+            }
+            completion(.success(true))
+        }
     }
+    
 }

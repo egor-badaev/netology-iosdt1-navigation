@@ -7,11 +7,13 @@
 //
 
 import UIKit
+import Firebase
 
 protocol LoginViewControllerDelegate: AnyObject {
     func loginController(_ loginController: LogInViewController, didSubmitLogin login: String)
     func loginController(_ loginController: LogInViewController, didSubmitPassword password: String)
-    func loginControllerShouldAllowLogin(_ loginController: LogInViewController) -> Bool
+    func loginControllerDidValidateCredentials(_ loginController: LogInViewController, completion: @escaping CredentialsVerificationCompletionBlock)
+    func loginControllerDidRegisterUser(_ loginController: LogInViewController, completion: @escaping CredentialsVerificationCompletionBlock)
 }
 
 class LogInViewController: UIViewController {
@@ -169,8 +171,52 @@ class LogInViewController: UIViewController {
     
     @objc private func loginButtonTapped(_ sender: Any) {
         guard let delegate = delegate else { return }
-        if(delegate.loginControllerShouldAllowLogin(self)) {
-            coordinator?.login()
+//        if(delegate.loginControllerShouldAllowLogin(self)) {
+//            coordinator?.login()
+//        }
+        delegate.loginControllerDidValidateCredentials(self) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .failure(let error):
+                self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: error.localizedDescription)
+                return
+            case .success(let allowedLogin):
+                if allowedLogin {
+                    self.coordinator?.login()
+                } else {
+                    self.coordinator?.showAlert(
+                        presentedOn: self,
+                        title: "Указанная комбинация логина и пароля не найдена",
+                        message: "Хотите зарегистрировать нового пользователя с указанными email и паролем?",
+                        actions: [
+                            UIAlertAction(
+                                title: "Зарегистрироваться",
+                                style: .default,
+                                handler: { action in
+                                    // TODO: Register new user
+                                    self.delegate?.loginControllerDidRegisterUser(self, completion: { registerResult in
+                                        switch registerResult {
+                                        case .failure(let registerError):
+                                            self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: registerError.localizedDescription)
+                                            return
+                                        case .success(let registered):
+                                            if !registered {
+                                                self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: "Невозможно выполнить вход")
+                                                return
+                                            }
+                                            self.coordinator?.login()
+                                        }
+                                    })
+                                }),
+                            UIAlertAction(
+                                title: "Попробовать ещё раз",
+                                style: .cancel,
+                                handler: nil)],
+                        completion: nil)
+                }
+                return
+            }
         }
     }
     
@@ -253,6 +299,7 @@ extension UITextField {
         self.textColor = .black
         self.tintColor = UIColor(named: AppConstants.accentColor)
         self.autocapitalizationType = .none
+        self.autocorrectionType = .no
         self.font = UIFont.systemFont(ofSize: 16)
         self.layer.borderWidth = 1.0
         self.layer.borderColor = UIColor.lightGray.cgColor
