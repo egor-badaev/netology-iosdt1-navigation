@@ -43,6 +43,7 @@
 		742C8311261457D500D28FB3 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C8310261457D500D28FB3 /* StringExtensions.swift */; };
 		742C83142614CE4600D28FB3 /* PersonModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C83132614CE4600D28FB3 /* PersonModel.swift */; };
 		742C83172615B8F800D28FB3 /* ActivityIndicatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C83162615B8F800D28FB3 /* ActivityIndicatorFactory.swift */; };
+		742C831B26177BC300D28FB3 /* AsyncImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C831A26177BC300D28FB3 /* AsyncImageProcessor.swift */; };
 		743F39E725573DD500F77FE2 /* PostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743F39E625573DD500F77FE2 /* PostButton.swift */; };
 		746F84F725C89E6D005C3026 /* iOSIntPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 746F84F625C89E6D005C3026 /* iOSIntPackage */; };
 		746F851D25C9D8CE005C3026 /* CredentialsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746F851C25C9D8CE005C3026 /* CredentialsStore.swift */; };
@@ -110,6 +111,7 @@
 		742C8310261457D500D28FB3 /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		742C83132614CE4600D28FB3 /* PersonModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonModel.swift; sourceTree = "<group>"; };
 		742C83162615B8F800D28FB3 /* ActivityIndicatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorFactory.swift; sourceTree = "<group>"; };
+		742C831A26177BC300D28FB3 /* AsyncImageProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageProcessor.swift; sourceTree = "<group>"; };
 		743F39E625573DD500F77FE2 /* PostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostButton.swift; sourceTree = "<group>"; };
 		746F851C25C9D8CE005C3026 /* CredentialsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsStore.swift; sourceTree = "<group>"; };
 		746F852125C9E0D1005C3026 /* CredentialsVerificator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsVerificator.swift; sourceTree = "<group>"; };
@@ -295,6 +297,7 @@
 				742C7868255496BD00B352FF /* StatusTextField.swift */,
 				74972E002566DBD200B29277 /* PhotosTableViewCell.swift */,
 				74972DF925651F2900B29277 /* PostTableViewCell.swift */,
+				742C831A26177BC300D28FB3 /* AsyncImageProcessor.swift */,
 			);
 			path = ProfileViewController;
 			sourceTree = "<group>";
@@ -483,6 +486,7 @@
 				74972E012566DBD200B29277 /* PhotosTableViewCell.swift in Sources */,
 				741ED10225FFFB8B00306193 /* PostDummy.swift in Sources */,
 				742C7869255496BD00B352FF /* StatusTextField.swift in Sources */,
+				742C831B26177BC300D28FB3 /* AsyncImageProcessor.swift in Sources */,
 				060782B6250CE27700A87020 /* FeedViewController.swift in Sources */,
 				74972DFA25651F2900B29277 /* PostTableViewCell.swift in Sources */,
 				74756D632563D208001D5099 /* UIView+Navigation.swift in Sources */,

@@ -56,12 +56,24 @@ class PhotosTableViewCell: UITableViewCell {
         for i in 0...3 {
 
             let imageView = UIImageView()
+            let activityView = ActivityIndicatorFactory.makeDefaultLoader()
+            imageView.addSubview(activityView)
+            NSLayoutConstraint.activate([
+                activityView.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
+                activityView.centerYAnchor.constraint(equalTo: imageView.centerYAnchor)
+            ])
+            activityView.startAnimating()
 
             imageView.contentMode = .scaleAspectFill
             
             if let image = UIImage(named: PhotoGalleryData.imageNames[i]) {
-                imageProcessor.processImage(sourceImage: image, filter: .monochrome(color: CIColor(red: 0.75, green: 0.75, blue: 0.75), intensity: 1.0)) { (image) in
-                    imageView.image = image
+                imageProcessor.processImageAsync(sourceImage: image, filter: .monochrome(color: CIColor(red: 0.75, green: 0.75, blue: 0.75), intensity: 1.0)) { (image) in
+                    guard let image = image else { return }
+                    DispatchQueue.main.async {
+                        imageView.image = UIImage(cgImage: image)
+                        activityView.stopAnimating()
+                        activityView.isHidden = true
+                    }
                 }
             }
 

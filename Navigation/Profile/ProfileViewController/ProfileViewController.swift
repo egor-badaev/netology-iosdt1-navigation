@@ -74,6 +74,8 @@ class ProfileViewController: UIViewController {
         return CGRect(x: absoluteOriginX, y: absoluteOriginY, width: headerView.avatarContainerView.bounds.width, height: headerView.avatarContainerView.bounds.height)
 
     }
+    
+    private let imageProcessor = AsyncImageProcessor()
 
     // MARK: - Lifecycle
 
@@ -215,7 +217,35 @@ extension ProfileViewController: UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: PostTableViewCell.reuseIdentifier, for: indexPath) as? PostTableViewCell else {
                 return UITableViewCell()
             }
-            cell.configure(with: Post.samplePosts[indexPath.row])
+            let post = Post.samplePosts[indexPath.row]
+            let identifier = post.identifier
+            cell.representedIdentifier = identifier
+            
+            if let processedImage = imageProcessor.processedImage(forIdentifier: identifier) {
+                cell.configure(with: post, image: processedImage)
+            } else {
+                cell.resetData()
+                
+                guard let sourceImage = UIImage(named: post.image) else {
+                    return UITableViewCell()
+                }
+                
+                imageProcessor.process(image: sourceImage, filter: .sepia(intensity: 0.5), forIdentifier: identifier) { result in
+                    
+                    guard cell.representedIdentifier == identifier else { return }
+                    
+                    switch result {
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                        return
+                    case .success(let image):
+                        DispatchQueue.main.async {
+                            cell.configure(with: post, image: image)
+                        }
+                        
+                    }
+                }
+            }
             return cell
 
         default:

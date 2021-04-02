@@ -14,6 +14,7 @@ class PostTableViewCell: UITableViewCell {
     // MARK: - Properties
     
     static let reuseIdentifier = "PostTableViewCell"
+    var representedIdentifier: Int?
     
     private let authorLabel: UILabel = {
         let authorLabel = UILabel()
@@ -58,6 +59,12 @@ class PostTableViewCell: UITableViewCell {
 
         return viewsLabel
     }()
+    
+    private let activityIndicator: UIActivityIndicatorView = {
+        let ai = UIActivityIndicatorView(style: .white)
+        ai.toAutoLayout()
+        return ai
+    }()
 
     // MARK: - Lyfecycle
     
@@ -81,6 +88,7 @@ class PostTableViewCell: UITableViewCell {
         contentView.addSubview(descriptionLabel)
         contentView.addSubview(likesLabel)
         contentView.addSubview(viewsLabel)
+        contentView.addSubview(activityIndicator)
         
         let constraints = [
             authorLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: AppConstants.margin),
@@ -99,28 +107,51 @@ class PostTableViewCell: UITableViewCell {
             likesLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -AppConstants.margin),
             viewsLabel.trailingAnchor.constraint(equalTo: descriptionLabel.trailingAnchor),
             viewsLabel.topAnchor.constraint(equalTo: likesLabel.topAnchor),
-            viewsLabel.bottomAnchor.constraint(equalTo: likesLabel.bottomAnchor)
+            viewsLabel.bottomAnchor.constraint(equalTo: likesLabel.bottomAnchor),
+            activityIndicator.centerXAnchor.constraint(equalTo: postImageView.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: postImageView.centerYAnchor)
         ]
         
         NSLayoutConstraint.activate(constraints)
+        showActivity()
     }
     
-    func configure(with post: Post) {
+    func configure(with post: Post, image: UIImage) {
+        representedIdentifier = post.identifier
         authorLabel.text = post.author
-        if let image = UIImage(named: post.image)  {
-            ImageProcessor().processImage(sourceImage: image, filter: .sepia(intensity: 0.5)) { (image) in
-                postImageView.image = image
-            }
-        }
+        postImageView.image = image
         descriptionLabel.text = post.description
         likesLabel.text = "Likes: \(post.likes)"
         viewsLabel.text = "Views: \(post.views)"
+        hideActivity()
     }
     
+    func resetData() {
+        authorLabel.text = nil
+        postImageView.image = nil
+        descriptionLabel.text = nil
+        likesLabel.text = nil
+        viewsLabel.text = nil
+        showActivity()
+    }
+    
+    // MARK: - Private functions
+    
+    private func showActivity() {
+        guard !activityIndicator.isAnimating else { return }
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    
+    private func hideActivity() {
+        guard activityIndicator.isAnimating else { return }
+        activityIndicator.stopAnimating()
+        activityIndicator.isHidden = true
+    }
 }
 
 // Common settings for likes and views labels
-extension UILabel {
+fileprivate extension UILabel {
     func setupSupplementaryLabels() {
         self.toAutoLayout()
         self.font = .systemFont(ofSize: 16)
