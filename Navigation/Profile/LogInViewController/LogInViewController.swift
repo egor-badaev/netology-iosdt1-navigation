@@ -14,6 +14,7 @@ protocol LoginViewControllerDelegate: AnyObject {
     func loginController(_ loginController: LogInViewController, didSubmitPassword password: String)
     func loginControllerDidValidateCredentials(_ loginController: LogInViewController, completion: @escaping CredentialsVerificationCompletionBlock)
     func loginControllerDidRegisterUser(_ loginController: LogInViewController, completion: @escaping CredentialsVerificationCompletionBlock)
+    func loginControllerShouldLoginAutomatically() -> Bool
 }
 
 class LogInViewController: UIViewController {
@@ -132,8 +133,17 @@ class LogInViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setupUI()
+        
+        setupBaseUI()
+        
+        if let delegate = delegate,
+           let coordinator = coordinator,
+           delegate.loginControllerShouldLoginAutomatically() {
+            coordinator.login()
+            return
+        }
+        
+        setupFullUI()
         
     }
     
@@ -227,8 +237,7 @@ class LogInViewController: UIViewController {
     
     // MARK: - Private methods
     
-    private func setupUI() {
-        
+    private func setupBaseUI() {
         navigationController?.navigationBar.isHidden = true
         
         if #available(iOS 13.0, *) {
@@ -237,6 +246,9 @@ class LogInViewController: UIViewController {
             // Fallback on earlier versions
             view.backgroundColor = .white
         }
+    }
+    
+    private func setupFullUI() {
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)

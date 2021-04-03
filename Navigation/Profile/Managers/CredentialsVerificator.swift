@@ -153,6 +153,13 @@ class CredentialsVerificator: LoginViewControllerDelegate {
         }
     }
     
+    func loginControllerShouldLoginAutomatically() -> Bool {
+        if Auth.auth().currentUser != nil {
+            return true
+        }
+        return false
+    }
+    
     // MARK: - Helpers
     private func handleCommonError(code: AuthErrorCode, error: NSError, completion: @escaping CredentialsVerificationCompletionBlock) {
         switch code {
