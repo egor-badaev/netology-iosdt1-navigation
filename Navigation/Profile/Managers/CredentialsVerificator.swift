@@ -11,15 +11,36 @@ import Firebase
 
 enum CredentialsError: LocalizedError {
     case emptyLogin
+    case invalidLogin
+    case userDisabled
+    case loginInUse
     case emptyPassword
+    case weakPassword(String)
+    case networkError
+    case tooManyRequests
+    case configError
     case unknown
     
     var errorDescription: String? {
         switch self {
         case .emptyLogin:
             return "Логин не может быть пустым"
+        case .invalidLogin:
+            return "Пожалуйста, используйте действительный email-адрес в качестве логина"
+        case .userDisabled:
+            return "Ваш аккаунт был отключён. Свяжитесь с администратором приложения для восстановления доступа"
+        case .loginInUse:
+            return "Пользователь с таким адресом уже зарегистрирован, пожалуйста, выберете другой адрес"
         case .emptyPassword:
             return "Пароль не может быть пустым"
+        case .weakPassword(let reason):
+            return "Вы ввели слишком ненадёжный пароль. \(reason)"
+        case .tooManyRequests:
+            return "С вашего устройства поступило слишком много запросов аутентификации. Пожалуйста, повторите попытку через 10 минут"
+        case .networkError:
+            return "Ошибка связи с сервером актентификации. Попробуйте ещё раз"
+        case .configError:
+            return "Возникла внутренняя ошибка в приложении. Пожалуйста, сообщите о баге разработчикам"
         case .unknown:
             return "Произошла неизвестная ошибка"
         }
@@ -63,7 +84,7 @@ class CredentialsVerificator: LoginViewControllerDelegate {
      
      - parameters:
         - loginController: a source controller which provides data
-        - completion: returns `failure(error)` if con't allow login, `success(true)` if should allow login and `success(false)` if can register a new user
+        - completion: returns `failure(error)` if can't allow login, `success(true)` if should allow login and `success(false)` if can register a new user
      
      - important: This function will issue an alert to user if there is an error.
      
@@ -85,11 +106,12 @@ class CredentialsVerificator: LoginViewControllerDelegate {
             if let error = error as NSError?,
                let code = AuthErrorCode(rawValue: error.code) {
                 switch code {
-                case .userNotFound:
+                case .userNotFound,
+                     .wrongPassword:
                     completion(.success(false))
                     return
                 default:
-                    completion(.failure(error))
+                    self.handleCommonError(code: code, error: error, completion: completion)
                 }
                 return
             }
@@ -103,7 +125,7 @@ class CredentialsVerificator: LoginViewControllerDelegate {
      
      - parameters:
         - loginController: a source controller which provides data
-        - completion: returns `failure(error)` if con't allow login, `success(true)` if should allow login and `success(false)` if can register a new user
+        - completion: returns `failure(error)` if can't allow login and `success(true)` if should allow login
      
      - important: This function will issue an alert to user if there is an error.
      
@@ -124,11 +146,39 @@ class CredentialsVerificator: LoginViewControllerDelegate {
         Auth.auth().createUser(withEmail: login, password: password) { (result, error) in
             if let error = error as NSError?,
                let code = AuthErrorCode(rawValue: error.code) {
-                print(error)
-                completion(.failure(error))
+                self.handleCommonError(code: code, error: error, completion: completion)
                 return
             }
             completion(.success(true))
+        }
+    }
+    
+    // MARK: - Helpers
+    private func handleCommonError(code: AuthErrorCode, error: NSError, completion: @escaping CredentialsVerificationCompletionBlock) {
+        switch code {
+        case .invalidEmail:
+            completion(.failure(CredentialsError.invalidLogin))
+        case .userDisabled:
+            completion(.failure(CredentialsError.userDisabled))
+        case .emailAlreadyInUse:
+            completion(.failure(CredentialsError.loginInUse))
+        case .weakPassword:
+            if let reason = error.userInfo[NSLocalizedFailureReasonErrorKey] as? String {
+                completion(.failure(CredentialsError.weakPassword(reason)))
+            } else {
+                print(error.userInfo)
+                completion(.failure(CredentialsError.unknown))
+            }
+        case .networkError:
+            completion(.failure(CredentialsError.networkError))
+        case .tooManyRequests:
+            completion(.failure(CredentialsError.tooManyRequests))
+        case .invalidAPIKey,
+             .appNotAuthorized,
+             .operationNotAllowed:
+            completion(.failure(CredentialsError.configError))
+        default:
+            completion(.failure(CredentialsError.unknown))
         }
     }
     

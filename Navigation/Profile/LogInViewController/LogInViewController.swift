@@ -171,9 +171,7 @@ class LogInViewController: UIViewController {
     
     @objc private func loginButtonTapped(_ sender: Any) {
         guard let delegate = delegate else { return }
-//        if(delegate.loginControllerShouldAllowLogin(self)) {
-//            coordinator?.login()
-//        }
+
         delegate.loginControllerDidValidateCredentials(self) { [weak self] result in
             guard let self = self else { return }
             
@@ -194,17 +192,12 @@ class LogInViewController: UIViewController {
                                 title: "Зарегистрироваться",
                                 style: .default,
                                 handler: { action in
-                                    // TODO: Register new user
                                     self.delegate?.loginControllerDidRegisterUser(self, completion: { registerResult in
                                         switch registerResult {
                                         case .failure(let registerError):
                                             self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: registerError.localizedDescription)
                                             return
-                                        case .success(let registered):
-                                            if !registered {
-                                                self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: "Невозможно выполнить вход")
-                                                return
-                                            }
+                                        case .success(_):
                                             self.coordinator?.login()
                                         }
                                     })
