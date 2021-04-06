@@ -48,7 +48,7 @@
 		743F39E725573DD500F77FE2 /* PostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743F39E625573DD500F77FE2 /* PostButton.swift */; };
 		746F84F725C89E6D005C3026 /* iOSIntPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 746F84F625C89E6D005C3026 /* iOSIntPackage */; };
 		746F851D25C9D8CE005C3026 /* CredentialsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746F851C25C9D8CE005C3026 /* CredentialsStore.swift */; };
-		746F852225C9E0D1005C3026 /* CredentialsVerificator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746F852125C9E0D1005C3026 /* CredentialsVerificator.swift */; };
+		746F852225C9E0D1005C3026 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746F852125C9E0D1005C3026 /* AuthenticationManager.swift */; };
 		746F852625C9E698005C3026 /* AlertFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746F852525C9E698005C3026 /* AlertFactory.swift */; };
 		74756D5F2563C319001D5099 /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74756D5E2563C319001D5099 /* LogInViewController.swift */; };
 		74756D632563D208001D5099 /* UIView+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74756D622563D208001D5099 /* UIView+Navigation.swift */; };
@@ -56,6 +56,7 @@
 		74756D6D2563E6FE001D5099 /* InputTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74756D6C2563E6FE001D5099 /* InputTextField.swift */; };
 		74756D702563E992001D5099 /* UIImage+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74756D6F2563E992001D5099 /* UIImage+Navigation.swift */; };
 		7484DA522613A333002CCD1C /* ToDoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7484DA512613A333002CCD1C /* ToDoModel.swift */; };
+		74939E50261D0EA300327F69 /* ExtendedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74939E4F261D0EA300327F69 /* ExtendedViewController.swift */; };
 		74972DFA25651F2900B29277 /* PostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74972DF925651F2900B29277 /* PostTableViewCell.swift */; };
 		74972E012566DBD200B29277 /* PhotosTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74972E002566DBD200B29277 /* PhotosTableViewCell.swift */; };
 		74A7A16625CDB4DA005D12DE /* PostWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A7A16525CDB4DA005D12DE /* PostWrapperView.swift */; };
@@ -117,7 +118,7 @@
 		742C831D2617992100D28FB3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		743F39E625573DD500F77FE2 /* PostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostButton.swift; sourceTree = "<group>"; };
 		746F851C25C9D8CE005C3026 /* CredentialsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsStore.swift; sourceTree = "<group>"; };
-		746F852125C9E0D1005C3026 /* CredentialsVerificator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsVerificator.swift; sourceTree = "<group>"; };
+		746F852125C9E0D1005C3026 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		746F852525C9E698005C3026 /* AlertFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertFactory.swift; sourceTree = "<group>"; };
 		74756D5E2563C319001D5099 /* LogInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		74756D622563D208001D5099 /* UIView+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Navigation.swift"; sourceTree = "<group>"; };
@@ -125,6 +126,7 @@
 		74756D6C2563E6FE001D5099 /* InputTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextField.swift; sourceTree = "<group>"; };
 		74756D6F2563E992001D5099 /* UIImage+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Navigation.swift"; sourceTree = "<group>"; };
 		7484DA512613A333002CCD1C /* ToDoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoModel.swift; sourceTree = "<group>"; };
+		74939E4F261D0EA300327F69 /* ExtendedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendedViewController.swift; sourceTree = "<group>"; };
 		74972DF925651F2900B29277 /* PostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTableViewCell.swift; sourceTree = "<group>"; };
 		74972E002566DBD200B29277 /* PhotosTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosTableViewCell.swift; sourceTree = "<group>"; };
 		74A7A16525CDB4DA005D12DE /* PostWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostWrapperView.swift; sourceTree = "<group>"; };
@@ -293,7 +295,7 @@
 		746F851B25C9D7EE005C3026 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
-				746F852125C9E0D1005C3026 /* CredentialsVerificator.swift */,
+				746F852125C9E0D1005C3026 /* AuthenticationManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -312,6 +314,7 @@
 				7429E5A526126578000DA30E /* Data+JSON.swift */,
 				742C8310261457D500D28FB3 /* StringExtensions.swift */,
 				742C83162615B8F800D28FB3 /* ActivityIndicatorFactory.swift */,
+				74939E4F261D0EA300327F69 /* ExtendedViewController.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -587,6 +590,7 @@
 				741EDFC02567250600A13F46 /* PhotosViewController.swift in Sources */,
 				7429E59926124E73000DA30E /* NetworkService.swift in Sources */,
 				746F852625C9E698005C3026 /* AlertFactory.swift in Sources */,
+				74939E50261D0EA300327F69 /* ExtendedViewController.swift in Sources */,
 				742C8311261457D500D28FB3 /* StringExtensions.swift in Sources */,
 				060782C6250CEB0A00A87020 /* InfoViewController.swift in Sources */,
 				060782CA250CEE7200A87020 /* Post.swift in Sources */,
@@ -600,7 +604,7 @@
 				74B2B4CC2601529900C0293A /* VideoPlayerViewController.swift in Sources */,
 				742C785F255461C500B352FF /* ProfileViewController.swift in Sources */,
 				74756D6D2563E6FE001D5099 /* InputTextField.swift in Sources */,
-				746F852225C9E0D1005C3026 /* CredentialsVerificator.swift in Sources */,
+				746F852225C9E0D1005C3026 /* AuthenticationManager.swift in Sources */,
 				742C83042613C8C400D28FB3 /* PlanetModel.swift in Sources */,
 				060782C8250CEE5D00A87020 /* PostViewController.swift in Sources */,
 				742C830D2613F7CD00D28FB3 /* PluralizableString.swift in Sources */,

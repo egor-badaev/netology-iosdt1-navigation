@@ -9,7 +9,7 @@
 import Foundation
 import Firebase
 
-enum CredentialsError: LocalizedError {
+enum AuthenticationError: LocalizedError {
     case emptyLogin
     case invalidLogin
     case userDisabled
@@ -47,23 +47,29 @@ enum CredentialsError: LocalizedError {
     }
 }
 
-typealias CredentialsVerificationCompletionBlock = (Result<Bool, Error>) -> Void
+typealias AuthenticationCompletionBlock = (Result<Bool, Error>) -> Void
 
 
-class CredentialsVerificator: LoginViewControllerDelegate {
+class AuthenticationManager {
+    
+    static let shared: AuthenticationManager = {
+        let instance = AuthenticationManager()
+        return instance
+    }()
     
     private var login: String?
     private var password: String?
+    
+    private init () { }
     
     /**
      Stores provided login for subsequent verification
      
      - parameters:
-        - loginController: a source controller which provides data
         - login: login provided for verifications
      
      */
-    func loginController(_ loginController: LogInViewController, didSubmitLogin login: String) {
+    func submitLogin(_ login: String) {
         self.login = login
     }
     
@@ -71,11 +77,10 @@ class CredentialsVerificator: LoginViewControllerDelegate {
      Stores provided password for subsequent verification
      
      - parameters:
-        - loginController: a source controller which provides data
         - password: password provided for verifications
      
      */
-    func loginController(_ loginController: LogInViewController, didSubmitPassword password: String) {
+    func submitPassword(_ password: String) {
         self.password = password
     }
     
@@ -83,21 +88,20 @@ class CredentialsVerificator: LoginViewControllerDelegate {
      Verifies credentials stored previously
      
      - parameters:
-        - loginController: a source controller which provides data
         - completion: returns `failure(error)` if can't allow login, `success(true)` if should allow login and `success(false)` if can register a new user
      
      - important: This function will issue an alert to user if there is an error.
      
      */
-    func loginControllerDidValidateCredentials(_ loginController: LogInViewController, completion: @escaping CredentialsVerificationCompletionBlock) {
+    func validateCredentials(withCompletion completion: @escaping AuthenticationCompletionBlock) {
         guard let login = self.login,
               !login.isEmpty else {
-            completion(.failure(CredentialsError.emptyLogin))
+            completion(.failure(AuthenticationError.emptyLogin))
             return
         }
         guard let password = self.password,
               !password.isEmpty else {
-            completion(.failure(CredentialsError.emptyPassword))
+            completion(.failure(AuthenticationError.emptyPassword))
             return
         }
 
@@ -124,22 +128,21 @@ class CredentialsVerificator: LoginViewControllerDelegate {
      Registers a new user
      
      - parameters:
-        - loginController: a source controller which provides data
         - completion: returns `failure(error)` if can't allow login and `success(true)` if should allow login
      
      - important: This function will issue an alert to user if there is an error.
      
      */
-    func loginControllerDidRegisterUser(_ loginController: LogInViewController, completion: @escaping CredentialsVerificationCompletionBlock) {
+    func createUser(withCompletion completion: @escaping AuthenticationCompletionBlock) {
         guard let login = self.login,
               !login.isEmpty else {
-            completion(.failure(CredentialsError.emptyLogin))
+            completion(.failure(AuthenticationError.emptyLogin))
             return
         }
         
         guard let password = self.password,
               !password.isEmpty else {
-            completion(.failure(CredentialsError.emptyPassword))
+            completion(.failure(AuthenticationError.emptyPassword))
             return
         }
         
@@ -153,39 +156,63 @@ class CredentialsVerificator: LoginViewControllerDelegate {
         }
     }
     
-    func loginControllerShouldLoginAutomatically() -> Bool {
+    /**
+     Registers a new user
+     
+     - parameters:
+        - completion: returns `true` if user is valid and signed in and `false` otherwise
+     
+     */
+    func validateUser(withCompletion completion: @escaping ((Bool) -> Void)) {
         if Auth.auth().currentUser != nil {
-            return true
+            completion(true)
+            return
         }
-        return false
+        completion(false)
+    }
+    
+    /**
+     Registers a new user
+     
+     - parameters:
+        - completion: returns `failure(error)` if can't sign out and `success(true)` if signed out successfully
+     
+     */
+    func logout(withCompletion completion: AuthenticationCompletionBlock) {
+        do {
+            try Auth.auth().signOut()
+            completion(.success(true))
+        } catch let error as NSError {
+            completion(.failure(error))
+        }
     }
     
     // MARK: - Helpers
-    private func handleCommonError(code: AuthErrorCode, error: NSError, completion: @escaping CredentialsVerificationCompletionBlock) {
+    private func handleCommonError(code: AuthErrorCode, error: NSError, completion: @escaping AuthenticationCompletionBlock) {
         switch code {
         case .invalidEmail:
-            completion(.failure(CredentialsError.invalidLogin))
+            completion(.failure(AuthenticationError.invalidLogin))
         case .userDisabled:
-            completion(.failure(CredentialsError.userDisabled))
+            completion(.failure(AuthenticationError.userDisabled))
         case .emailAlreadyInUse:
-            completion(.failure(CredentialsError.loginInUse))
+            completion(.failure(AuthenticationError.loginInUse))
         case .weakPassword:
             if let reason = error.userInfo[NSLocalizedFailureReasonErrorKey] as? String {
-                completion(.failure(CredentialsError.weakPassword(reason)))
+                completion(.failure(AuthenticationError.weakPassword(reason)))
             } else {
                 print(error.userInfo)
-                completion(.failure(CredentialsError.unknown))
+                completion(.failure(AuthenticationError.unknown))
             }
         case .networkError:
-            completion(.failure(CredentialsError.networkError))
+            completion(.failure(AuthenticationError.networkError))
         case .tooManyRequests:
-            completion(.failure(CredentialsError.tooManyRequests))
+            completion(.failure(AuthenticationError.tooManyRequests))
         case .invalidAPIKey,
              .appNotAuthorized,
              .operationNotAllowed:
-            completion(.failure(CredentialsError.configError))
+            completion(.failure(AuthenticationError.configError))
         default:
-            completion(.failure(CredentialsError.unknown))
+            completion(.failure(AuthenticationError.unknown))
         }
     }
     

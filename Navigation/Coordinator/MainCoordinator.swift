@@ -12,7 +12,6 @@ final class MainCoordinator {
     var childCoordinators: [Coordinator] = []
     private var rootWindow: UIWindow?
     private var tabBarController: UITabBarController
-    private var credentialsVerificator: CredentialsVerificator?
 
     init(rootWindow: UIWindow?) {
         self.rootWindow = rootWindow
@@ -36,12 +35,10 @@ final class MainCoordinator {
     }
     
     private func setupProfileCoordinator() {
-        credentialsVerificator = CredentialsVerificator()
         let loginViewController = LogInViewController()
         let profileNavigationController = UINavigationController(rootViewController: loginViewController)
         let profileCoordinator = ProfileCoordinator(navigationController: profileNavigationController)
         loginViewController.coordinator = profileCoordinator
-        loginViewController.delegate = credentialsVerificator
         childCoordinators.append(profileCoordinator)
     }
     

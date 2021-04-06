@@ -127,6 +127,17 @@ class ProfileViewController: UIViewController {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(avatarTapped(_:)))
         headerView.avatarImageView.isUserInteractionEnabled = true
         headerView.avatarImageView.addGestureRecognizer(tapGestureRecognizer)
+        headerView.logoutCompletion = { [weak self] in
+            AuthenticationManager.shared.logout { result in
+                guard let self = self else { return }
+                switch result {
+                case .failure( _):
+                    self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: "Невозможно выполнить выход")
+                case .success( _):
+                    self.coordinator?.logout()
+                }
+            }
+        }
     }
 
     @objc private func avatarTapped(_ sender: Any) {
