@@ -7,14 +7,9 @@
 //
 
 import UIKit
+import Firebase
 
-protocol LoginViewControllerDelegate: AnyObject {
-    func loginController(_ loginController: LogInViewController, didSubmitLogin login: String)
-    func loginController(_ loginController: LogInViewController, didSubmitPassword password: String)
-    func loginControllerShouldAllowLogin(_ loginController: LogInViewController) -> Bool
-}
-
-class LogInViewController: UIViewController {
+class LogInViewController: ExtendedViewController {
     
     // MARK: - Constants
     
@@ -28,10 +23,15 @@ class LogInViewController: UIViewController {
     // MARK: - Properties
     
     weak var coordinator: ProfileCoordinator?
-    weak var delegate: LoginViewControllerDelegate?
+    
+    // MARK: - Flags
+    private var viewIsSet: Bool = false
+    private var shouldWaitForUserValidation = true
+    private var shouldLogin = false
 
-    private let scrollView: UIScrollView = {
-       let scrollView = UIScrollView()
+    // MARK: - Subviews
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
         
         scrollView.toAutoLayout()
         scrollView.backgroundColor = .white
@@ -40,7 +40,7 @@ class LogInViewController: UIViewController {
         return scrollView
     }()
     
-    private let contentView: UIView = {
+    private lazy var contentView: UIView = {
         let contentView = UIView()
         
         contentView.toAutoLayout()
@@ -48,7 +48,7 @@ class LogInViewController: UIViewController {
         return contentView
     }()
     
-    private let logoImageView: UIImageView = {
+    private lazy var logoImageView: UIImageView = {
         let logoImageView = UIImageView()
         
         logoImageView.toAutoLayout()
@@ -57,7 +57,7 @@ class LogInViewController: UIViewController {
         return logoImageView
     }()
     
-    private let emailTextField: UITextField = {
+    private lazy var emailTextField: UITextField = {
        let emailTextField = InputTextField()
         
         emailTextField.setupCommonProperties()
@@ -68,7 +68,7 @@ class LogInViewController: UIViewController {
         return emailTextField
     }()
     
-    private let passwordTextField: UITextField = {
+    private lazy var passwordTextField: UITextField = {
         let passwordTextField = InputTextField()
         
         passwordTextField.setupCommonProperties()
@@ -99,6 +99,13 @@ class LogInViewController: UIViewController {
         return stackView
     }()
     
+    private lazy var loader: UIActivityIndicatorView = {
+        let loader = UIActivityIndicatorView(style: .white)
+        loader.toAutoLayout()
+        loader.isHidden = true
+        return loader
+    }()
+    
     private lazy var loginButton: UIButton = {
         let loginButton = UIButton()
         
@@ -107,7 +114,7 @@ class LogInViewController: UIViewController {
         loginButton.setTitle("Log in", for: .normal)
 
         loginButton.setTitleColor(.white, for: .normal)
-        loginButton.setTitleColor(UIColor(white: 1, alpha: 0.8), for: .disabled)
+        loginButton.setTitleColor(UIColor(white: 1, alpha: 0), for: .disabled)
         loginButton.setTitleColor(UIColor(white: 1, alpha: 0.8), for: .highlighted)
         loginButton.setTitleColor(UIColor(white: 1, alpha: 0.8), for: .focused)
         loginButton.setTitleColor(UIColor(white: 1, alpha: 0.8), for: .selected)
@@ -122,17 +129,44 @@ class LogInViewController: UIViewController {
         loginButton.layer.cornerRadius = Constants.cornerRadius
         
         loginButton.addTarget(self, action: #selector(loginButtonTapped(_:)), for: .touchUpInside)
+        
+        loginButton.addSubview(loader)
+        NSLayoutConstraint.activate([
+            loader.centerXAnchor.constraint(equalTo: loginButton.centerXAnchor),
+            loader.centerYAnchor.constraint(equalTo: loginButton.centerYAnchor)
+        ])
 
         return loginButton
     }()
+    
+    private let initialLoader = ActivityIndicatorFactory.makeDefaultLoader()
     
     // MARK: - Life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setupUI()
         
+        setupBaseUI()
+        
+        shouldWaitForUserValidation = true
+
+        AuthenticationManager.shared.validateUser { [weak self] isValidUser in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.shouldWaitForUserValidation = false
+                if isValidUser {
+                    if self.viewHasAppeared {
+                        self.login()
+                    } else {
+                        /// View hasn't appeared yet, so it's too early to push
+                        /// view controller - transition animation won't work
+                        self.shouldLogin = true
+                    }
+                } else {
+                    self.setupFullUI(animated: true)
+                }
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -140,6 +174,23 @@ class LogInViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+
+        guard !shouldWaitForUserValidation else {
+            /// Aborting setting up main UI because we don't know if
+            /// it is needed at the time
+            return
+        }
+        
+        setupFullUI()
+        passwordTextField.text = nil
+
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if shouldLogin {
+            login()
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -168,28 +219,67 @@ class LogInViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func loginButtonTapped(_ sender: Any) {
-        guard let delegate = delegate else { return }
-        if(delegate.loginControllerShouldAllowLogin(self)) {
-            coordinator?.login()
+
+        toggleActivity(loading: true)
+        AuthenticationManager.shared.validateCredentials { [weak self] result in
+            guard let self = self else { return }
+            
+            self.toggleActivity(loading: false)
+            switch result {
+            case .failure(let error):
+                self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: error.localizedDescription)
+                return
+            case .success(let allowedLogin):
+                if allowedLogin {
+                    self.coordinator?.login()
+                } else {
+                    self.coordinator?.showAlert(
+                        presentedOn: self,
+                        title: "Указанная комбинация логина и пароля не найдена",
+                        message: "Хотите зарегистрировать нового пользователя с указанными email и паролем?",
+                        actions: [
+                            UIAlertAction(
+                                title: "Зарегистрироваться",
+                                style: .default,
+                                handler: { action in
+                                    self.toggleActivity(loading: true)
+                                    AuthenticationManager.shared.createUser(withCompletion: { registerResult in
+                                        self.toggleActivity(loading: false)
+                                        switch registerResult {
+                                        case .failure(let registerError):
+                                            self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: registerError.localizedDescription)
+                                            return
+                                        case .success(_):
+                                            self.coordinator?.login()
+                                        }
+                                    })
+                                }),
+                            UIAlertAction(
+                                title: "Попробовать ещё раз",
+                                style: .cancel,
+                                handler: nil)],
+                        completion: nil)
+                }
+                return
+            }
         }
     }
     
     @objc private func loginFieldDidChangeEditing(_ sender: UITextField) {
         if let login = sender.text {
-            delegate?.loginController(self, didSubmitLogin: login)
+            AuthenticationManager.shared.submitLogin(login)
         }
     }
     
     @objc private func passwordFieldDidChangeEditing(_ sender: UITextField) {
         if let password = sender.text {
-            delegate?.loginController(self, didSubmitPassword: password)
+            AuthenticationManager.shared.submitPassword(password)
         }
     }
     
     // MARK: - Private methods
     
-    private func setupUI() {
-        
+    private func setupBaseUI() {
         navigationController?.navigationBar.isHidden = true
         
         if #available(iOS 13.0, *) {
@@ -198,6 +288,23 @@ class LogInViewController: UIViewController {
             // Fallback on earlier versions
             view.backgroundColor = .white
         }
+        
+        view.addSubview(initialLoader)
+        NSLayoutConstraint.activate([
+            initialLoader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            initialLoader.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        initialLoader.startAnimating()
+    }
+    
+    private func setupFullUI(animated: Bool = false) {
+        guard !viewIsSet else {
+            /// Aborting setting up main UI because it's already been set
+            return
+        }
+        
+        initialLoader.stopAnimating()
+        initialLoader.isHidden = true
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -237,6 +344,29 @@ class LogInViewController: UIViewController {
         ]
         
         NSLayoutConstraint.activate(constraints)
+
+        viewIsSet = true
+        
+        if animated {
+            scrollView.contentOffset =  CGPoint(x: 0, y: -view.frame.height)
+            UIView.animate(withDuration: AppConstants.animationDuration, delay: .zero, options: .curveEaseOut, animations: {
+                self.scrollView.contentOffset = .zero
+            }, completion: nil)
+        }
+    }
+    
+    private func toggleActivity(loading: Bool) {
+        DispatchQueue.main.async {
+            self.loginButton.isEnabled = !loading
+            self.loader.isHidden = !loading
+            loading ? self.loader.startAnimating() : self.loader.stopAnimating()
+        }
+    }
+    
+    private func login() {
+        initialLoader.stopAnimating()
+        coordinator?.login()
+        shouldLogin = false
     }
 
 }
@@ -253,6 +383,7 @@ extension UITextField {
         self.textColor = .black
         self.tintColor = UIColor(named: AppConstants.accentColor)
         self.autocapitalizationType = .none
+        self.autocorrectionType = .no
         self.font = UIFont.systemFont(ofSize: 16)
         self.layer.borderWidth = 1.0
         self.layer.borderColor = UIColor.lightGray.cgColor

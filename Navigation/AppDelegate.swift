@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,6 +24,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         appConfiguration = AppConfiguration.randomize()
         fetchData()
+        
+        FirebaseApp.configure()
 
         return true
     }

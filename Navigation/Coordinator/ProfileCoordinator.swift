@@ -31,4 +31,8 @@ final class ProfileCoordinator: Coordinator {
     func showPhotos() {
         navigationController.pushViewController(PhotosViewController(), animated: true)
     }
+    
+    func logout() {
+        navigationController.popToRootViewController(animated: true)
+    }
 }

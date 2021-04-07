@@ -20,6 +20,8 @@ class ProfileHeaderView: UIView {
         static let statusButtonHeight: CGFloat = 50.0
         static let defaultStatusText = "Waiting for something..."
     }
+    
+    var logoutCompletion: (() -> Void)?
 
     // MARK: - Setup UI
 
@@ -52,6 +54,17 @@ class ProfileHeaderView: UIView {
         titleLabel.sizeToFit()
 
         return titleLabel
+    }()
+    
+    private lazy var logoutButton: UIButton = {
+        let logoutButton = UIButton(type: .system)
+        
+        logoutButton.toAutoLayout()
+        logoutButton.setTitle("Sign out", for: .normal)
+        logoutButton.titleLabel?.textAlignment = .left
+        logoutButton.addTarget(self, action: #selector(logOutButtonTapped(_:)), for: .touchUpInside)
+        
+        return logoutButton
     }()
 
     private lazy var statusLabel: UILabel = {
@@ -150,6 +163,7 @@ class ProfileHeaderView: UIView {
         addSubview(avatarContainerView)
         avatarContainerView.addSubview(avatarImageView)
         addSubview(titleLabel)
+        addSubview(logoutButton)
         addSubview(statusLabel)
         addSubview(statusTextField)
         addSubview(statusButton)
@@ -163,6 +177,9 @@ class ProfileHeaderView: UIView {
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: Config.largeMargin),
             titleLabel.leadingAnchor.constraint(equalTo: avatarContainerView.trailingAnchor, constant: AppConstants.margin),
             titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -AppConstants.margin),
+            
+            logoutButton.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
+            logoutButton.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
 
             statusButton.topAnchor.constraint(equalTo: avatarContainerView.bottomAnchor, constant: 43.0),
             statusButton.leadingAnchor.constraint(equalTo: avatarContainerView.leadingAnchor),
@@ -206,6 +223,10 @@ class ProfileHeaderView: UIView {
             return
         }
         self.statusText = statusText
+    }
+    
+    @objc private func logOutButtonTapped(_ sender: UIButton) {
+        logoutCompletion?()
     }
 
 }
