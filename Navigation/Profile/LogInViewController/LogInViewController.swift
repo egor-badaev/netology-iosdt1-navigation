@@ -148,6 +148,8 @@ class LogInViewController: ExtendedViewController {
         
         setupBaseUI()
         
+        shouldWaitForUserValidation = true
+
         AuthenticationManager.shared.validateUser { [weak self] isValidUser in
             guard let self = self else { return }
             DispatchQueue.main.async {
@@ -170,16 +172,18 @@ class LogInViewController: ExtendedViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        setupFullUI()
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+
         guard !shouldWaitForUserValidation else {
+            /// Aborting setting up main UI because we don't know if
+            /// it is needed at the time
             return
         }
         
+        setupFullUI()
         passwordTextField.text = nil
 
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -291,19 +295,11 @@ class LogInViewController: ExtendedViewController {
             initialLoader.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
         initialLoader.startAnimating()
-        
-        shouldWaitForUserValidation = true
     }
     
     private func setupFullUI(animated: Bool = false) {
         guard !viewIsSet else {
             /// Aborting setting up main UI because it's already been set
-            return
-        }
-        
-        guard !shouldWaitForUserValidation else {
-            /// Aborting setting up main UI because we don't know if
-            /// it is needed at the time
             return
         }
         
