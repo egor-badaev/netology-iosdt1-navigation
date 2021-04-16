@@ -1,97 +1,63 @@
 //
-//  CredentialsVerificator.swift
+//  AuthenticationManager.swift
 //  Navigation
 //
-//  Created by Egor Badaev on 02.02.2021.
-//  Copyright © 2021 Artem Novichkov. All rights reserved.
+//  Created by Egor Badaev on 16.04.2021.
+//  Copyright © 2021 Egor Badaev. All rights reserved.
 //
 
 import Foundation
 import Firebase
 
-enum AuthenticationError: LocalizedError {
-    case emptyLogin
-    case invalidLogin
-    case userDisabled
-    case loginInUse
-    case emptyPassword
-    case weakPassword(String)
-    case networkError
-    case tooManyRequests
-    case configError
-    case unknown
-    
-    var errorDescription: String? {
-        switch self {
-        case .emptyLogin:
-            return "Логин не может быть пустым"
-        case .invalidLogin:
-            return "Пожалуйста, используйте действительный email-адрес в качестве логина"
-        case .userDisabled:
-            return "Ваш аккаунт был отключён. Свяжитесь с администратором приложения для восстановления доступа"
-        case .loginInUse:
-            return "Пользователь с таким адресом уже зарегистрирован, пожалуйста, выберете другой адрес"
-        case .emptyPassword:
-            return "Пароль не может быть пустым"
-        case .weakPassword(let reason):
-            return "Вы ввели слишком ненадёжный пароль. \(reason)"
-        case .tooManyRequests:
-            return "С вашего устройства поступило слишком много запросов аутентификации. Пожалуйста, повторите попытку через 10 минут"
-        case .networkError:
-            return "Ошибка связи с сервером актентификации. Попробуйте ещё раз"
-        case .configError:
-            return "Возникла внутренняя ошибка в приложении. Пожалуйста, сообщите о баге разработчикам"
-        case .unknown:
-            return "Произошла неизвестная ошибка"
-        }
-    }
-}
-
-typealias AuthenticationCompletionBlock = (Result<Bool, Error>) -> Void
-
-
 class AuthenticationManager {
-    
-    static let shared: AuthenticationManager = {
-        let instance = AuthenticationManager()
+
+    static let shared: AuthenticationProviderProtocol = {
+        var instance: AuthenticationProviderProtocol
+
+        switch AppConstants.authenticationProvider {
+        case .firebase:
+            instance = FirebaseAuthenticationManager()
+        }
+
         return instance
     }()
-    
+}
+
+private class FirebaseAuthenticationManager: AuthenticationProviderProtocol {
+
     private var login: String?
     private var password: String?
-    
-    private init () { }
-    
+
     /**
      Stores provided login for subsequent verification
-     
+
      - parameters:
         - login: login provided for verifications
-     
+
      */
     func submitLogin(_ login: String) {
         self.login = login
     }
-    
+
     /**
      Stores provided password for subsequent verification
-     
+
      - parameters:
         - password: password provided for verifications
-     
+
      */
     func submitPassword(_ password: String) {
         self.password = password
     }
-    
+
     /**
      Verifies credentials stored previously
-     
+
      - parameters:
         - completion: returns `failure(error)` if can't allow login, `success(true)` if should allow login and `success(false)` if can register a new user
-     
+
      - important: This function will issue an alert to user if there is an error.
-     
+
      */
     func validateCredentials(withCompletion completion: @escaping AuthenticationCompletionBlock) {
         guard let login = self.login,
@@ -106,7 +72,7 @@ class AuthenticationManager {
         }
 
         Auth.auth().signIn(withEmail: login, password: password) { (result, error) in
-            
+
             if let error = error as NSError?,
                let code = AuthErrorCode(rawValue: error.code) {
                 switch code {
@@ -119,19 +85,19 @@ class AuthenticationManager {
                 }
                 return
             }
-            
+
             completion(.success(true))
         }
     }
-    
+
     /**
      Registers a new user
-     
+
      - parameters:
         - completion: returns `failure(error)` if can't allow login and `success(true)` if should allow login
-     
+
      - important: This function will issue an alert to user if there is an error.
-     
+
      */
     func createUser(withCompletion completion: @escaping AuthenticationCompletionBlock) {
         guard let login = self.login,
@@ -139,13 +105,13 @@ class AuthenticationManager {
             completion(.failure(AuthenticationError.emptyLogin))
             return
         }
-        
+
         guard let password = self.password,
               !password.isEmpty else {
             completion(.failure(AuthenticationError.emptyPassword))
             return
         }
-        
+
         Auth.auth().createUser(withEmail: login, password: password) { (result, error) in
             if let error = error as NSError?,
                let code = AuthErrorCode(rawValue: error.code) {
@@ -155,13 +121,13 @@ class AuthenticationManager {
             completion(.success(true))
         }
     }
-    
+
     /**
      Registers a new user
-     
+
      - parameters:
         - completion: returns `true` if user is valid and signed in and `false` otherwise
-     
+
      */
     func validateUser(withCompletion completion: @escaping ((Bool) -> Void)) {
         if Auth.auth().currentUser != nil {
@@ -170,13 +136,13 @@ class AuthenticationManager {
         }
         completion(false)
     }
-    
+
     /**
      Registers a new user
-     
+
      - parameters:
         - completion: returns `failure(error)` if can't sign out and `success(true)` if signed out successfully
-     
+
      */
     func logout(withCompletion completion: AuthenticationCompletionBlock) {
         do {
@@ -186,7 +152,7 @@ class AuthenticationManager {
             completion(.failure(error))
         }
     }
-    
+
     // MARK: - Helpers
     private func handleCommonError(code: AuthErrorCode, error: NSError, completion: @escaping AuthenticationCompletionBlock) {
         switch code {
@@ -215,5 +181,5 @@ class AuthenticationManager {
             completion(.failure(AuthenticationError.unknown))
         }
     }
-    
+
 }
