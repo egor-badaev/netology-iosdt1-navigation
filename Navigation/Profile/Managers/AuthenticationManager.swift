@@ -15,6 +15,8 @@ class AuthenticationManager {
         var instance: AuthenticationProviderProtocol
 
         switch AppConstants.authenticationProvider {
+        case .credentialsStore:
+            instance = CredentialsStoreAuthenticationManager()
         case .firebase:
             instance = FirebaseAuthenticationManager()
         }
@@ -22,6 +24,124 @@ class AuthenticationManager {
         return instance
     }()
 }
+
+private class CredentialsStoreAuthenticationManager: AuthenticationProviderProtocol {
+
+    private var login: String?
+    private var password: String?
+
+    /**
+     Stores provided login for subsequent verification
+
+     - parameters:
+        - loginController: a source controller which provides data
+        - login: login provided for verifications
+
+     */
+    func submitLogin(_ login: String) {
+        self.login = login
+    }
+
+    /**
+     Stores provided password for subsequent verification
+
+     - parameters:
+        - loginController: a source controller which provides data
+        - password: password provided for verifications
+
+     */
+    func submitPassword(_ password: String) {
+        self.password = password
+    }
+
+    /**
+     Verifies credentials stored previously
+
+     - returns: `true` if both stored credentials are correct, `false` otherwise
+
+     - parameters:
+        - loginController: a source controller which provides data
+
+     - important: This function will issue an alert to user if there is an error.
+
+     */
+    func validateCredentials(withCompletion completion: @escaping AuthenticationCompletionBlock) {
+        guard let login = self.login,
+              !login.isEmpty else {
+            completion(.failure(AuthenticationError.emptyLogin))
+            return
+        }
+        guard let password = self.password,
+              !password.isEmpty else {
+            completion(.failure(AuthenticationError.emptyPassword))
+            return
+        }
+
+        CredentialsStore.shared.signIn(withLogin: login, password: password) { success in
+            completion(.success(success))
+        }
+    }
+
+    /**
+     Registers a new user
+
+     - parameters:
+        - completion: returns `failure(error)` if can't allow login and `success(true)` if should allow login
+
+     - important: This function will issue an alert to user if there is an error.
+
+     */
+    func createUser(withCompletion completion: @escaping AuthenticationCompletionBlock) {
+        guard let login = self.login,
+              !login.isEmpty else {
+            completion(.failure(AuthenticationError.emptyLogin))
+            return
+        }
+        guard let password = self.password,
+              !password.isEmpty else {
+            completion(.failure(AuthenticationError.emptyPassword))
+            return
+        }
+
+        CredentialsStore.shared.createUser(withLogin: login, password: password) { (success, error) in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            completion(.success(success))
+        }
+    }
+
+    /**
+     Checks if user is currently logged in
+
+     - parameters:
+        - completion: returns `true` if user is valid and signed in and `false` otherwise
+
+     */
+    func validateUser(withCompletion completion: @escaping ((Bool) -> Void)) {
+        if CredentialsStore.shared.activeUser != nil {
+            completion(true)
+            return
+        }
+        completion(false)
+    }
+
+    /**
+     Logs out current user
+
+     - parameters:
+        - completion: returns `failure(error)` if can't sign out and `success(true)` if signed out successfully
+
+     */
+    func logout(withCompletion completion: (Result<Bool, Error>) -> Void) {
+        CredentialsStore.shared.signOut()
+        completion(.success(true))
+    }
+
+}
+
 
 private class FirebaseAuthenticationManager: AuthenticationProviderProtocol {
 
@@ -123,7 +243,7 @@ private class FirebaseAuthenticationManager: AuthenticationProviderProtocol {
     }
 
     /**
-     Registers a new user
+     Checks if user is currently logged in
 
      - parameters:
         - completion: returns `true` if user is valid and signed in and `false` otherwise
@@ -138,7 +258,7 @@ private class FirebaseAuthenticationManager: AuthenticationProviderProtocol {
     }
 
     /**
-     Registers a new user
+     Logs out current user
 
      - parameters:
         - completion: returns `failure(error)` if can't sign out and `success(true)` if signed out successfully

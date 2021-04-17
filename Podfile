@@ -8,6 +8,7 @@ target 'Navigation' do
   # Pods for Navigation
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
+  pod 'KeychainAccess'
 
 end
 

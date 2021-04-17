@@ -46,6 +46,7 @@
 		74756D6D2563E6FE001D5099 /* InputTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74756D6C2563E6FE001D5099 /* InputTextField.swift */; };
 		7484DA522613A333002CCD1C /* ToDoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7484DA512613A333002CCD1C /* ToDoModel.swift */; };
 		7487B021262A186500F25649 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7487B020262A186500F25649 /* AuthenticationManager.swift */; };
+		7487B034262A232100F25649 /* KeychainPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7487B033262A232100F25649 /* KeychainPassword.swift */; };
 		7487B039262ABB9200F25649 /* EBFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 7487B038262ABB9200F25649 /* EBFoundation */; };
 		74972DFA25651F2900B29277 /* PostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74972DF925651F2900B29277 /* PostTableViewCell.swift */; };
 		74972E012566DBD200B29277 /* PhotosTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74972E002566DBD200B29277 /* PhotosTableViewCell.swift */; };
@@ -105,6 +106,7 @@
 		74756D6C2563E6FE001D5099 /* InputTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextField.swift; sourceTree = "<group>"; };
 		7484DA512613A333002CCD1C /* ToDoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoModel.swift; sourceTree = "<group>"; };
 		7487B020262A186500F25649 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
+		7487B033262A232100F25649 /* KeychainPassword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainPassword.swift; sourceTree = "<group>"; };
 		74972DF925651F2900B29277 /* PostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTableViewCell.swift; sourceTree = "<group>"; };
 		74972E002566DBD200B29277 /* PhotosTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosTableViewCell.swift; sourceTree = "<group>"; };
 		74A7A16525CDB4DA005D12DE /* PostWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostWrapperView.swift; sourceTree = "<group>"; };
@@ -304,7 +306,7 @@
 			children = (
 				060782C9250CEE7200A87020 /* Post.swift */,
 				741EDFBA25670C5D00A13F46 /* PhotoGalleryData.swift */,
-				746F851C25C9D8CE005C3026 /* CredentialsStore.swift */,
+				74DE1135262AFA9D00ECD59A /* CredentialsStore */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -364,6 +366,15 @@
 				74B2B4CB2601529900C0293A /* VideoPlaylistProvider.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		74DE1135262AFA9D00ECD59A /* CredentialsStore */ = {
+			isa = PBXGroup;
+			children = (
+				746F851C25C9D8CE005C3026 /* CredentialsStore.swift */,
+				7487B033262A232100F25649 /* KeychainPassword.swift */,
+			);
+			path = CredentialsStore;
 			sourceTree = "<group>";
 		};
 		74EAF6A125D1C37400F41122 /* Coordinator */ = {
@@ -547,6 +558,7 @@
 				7487B021262A186500F25649 /* AuthenticationManager.swift in Sources */,
 				741124EF2601392C00837B3C /* AudioTrack.swift in Sources */,
 				74EAF6AA25D1C5D000F41122 /* ProfileCoordinator.swift in Sources */,
+				7487B034262A232100F25649 /* KeychainPassword.swift in Sources */,
 				742C785B2554618200B352FF /* ProfileHeaderView.swift in Sources */,
 				741EDFBB25670C5D00A13F46 /* PhotoGalleryData.swift in Sources */,
 				74756D6A2563DB87001D5099 /* AppConstants.swift in Sources */,

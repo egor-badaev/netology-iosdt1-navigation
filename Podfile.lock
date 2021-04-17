@@ -65,6 +65,7 @@ PODS:
   - GoogleUtilities/UserDefaults (7.3.1):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.5.0)
+  - KeychainAccess (4.2.2)
   - nanopb (2.30907.0):
     - nanopb/decode (= 2.30907.0)
     - nanopb/encode (= 2.30907.0)
@@ -75,6 +76,7 @@ PODS:
 DEPENDENCIES:
   - Firebase/Auth
   - Firebase/Core
+  - KeychainAccess
 
 SPEC REPOS:
   trunk:
@@ -88,6 +90,7 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleUtilities
     - GTMSessionFetcher
+    - KeychainAccess
     - nanopb
     - PromisesObjC
 
@@ -102,9 +105,10 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleUtilities: e1d9ed4e544fc32a93e00e721400cbc3f377200d
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
+  KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
   nanopb: 59221d7f958fb711001e6a449489542d92ae113e
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
 
-PODFILE CHECKSUM: 77bf3fb3fd159973b3e43ff5952cc759e61516c7
+PODFILE CHECKSUM: ff64e7c0dff029d221e3f744ded6c4dc0166eebd
 
 COCOAPODS: 1.10.0

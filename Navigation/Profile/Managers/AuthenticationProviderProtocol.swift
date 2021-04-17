@@ -92,7 +92,7 @@ protocol AuthenticationProviderProtocol {
     func createUser(withCompletion completion: @escaping AuthenticationCompletionBlock)
     
     /**
-     Registers a new user
+     Checks if user is currently logged in
      
      - parameters:
         - completion: returns `true` if user is valid and signed in and `false` otherwise
@@ -101,7 +101,7 @@ protocol AuthenticationProviderProtocol {
     func validateUser(withCompletion completion: @escaping ((Bool) -> Void))
     
     /**
-     Registers a new user
+     Logs out current user
      
      - parameters:
         - completion: returns `failure(error)` if can't sign out and `success(true)` if signed out successfully
