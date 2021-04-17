@@ -14,6 +14,7 @@
 		060782C6250CEB0A00A87020 /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060782C5250CEB0A00A87020 /* InfoViewController.swift */; };
 		060782C8250CEE5D00A87020 /* PostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060782C7250CEE5D00A87020 /* PostViewController.swift */; };
 		060782CA250CEE7200A87020 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060782C9250CEE7200A87020 /* Post.swift */; };
+		74053821262AFFFE00AF7CED /* RealmAuthenticationAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74053820262AFFFE00AF7CED /* RealmAuthenticationAdapter.swift */; };
 		741124E72601392C00837B3C /* LedZeppelin.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 741124DC2601392C00837B3C /* LedZeppelin.mp3 */; };
 		741124E82601392C00837B3C /* CreedenceClearwaterRevival.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 741124DD2601392C00837B3C /* CreedenceClearwaterRevival.mp3 */; };
 		741124E92601392C00837B3C /* ACDC.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 741124DE2601392C00837B3C /* ACDC.m4a */; };
@@ -75,6 +76,7 @@
 		060782C5250CEB0A00A87020 /* InfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
 		060782C7250CEE5D00A87020 /* PostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostViewController.swift; sourceTree = "<group>"; };
 		060782C9250CEE7200A87020 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
+		74053820262AFFFE00AF7CED /* RealmAuthenticationAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmAuthenticationAdapter.swift; sourceTree = "<group>"; };
 		741124DC2601392C00837B3C /* LedZeppelin.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = LedZeppelin.mp3; sourceTree = "<group>"; };
 		741124DD2601392C00837B3C /* CreedenceClearwaterRevival.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = CreedenceClearwaterRevival.mp3; sourceTree = "<group>"; };
 		741124DE2601392C00837B3C /* ACDC.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = ACDC.m4a; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 				060782C9250CEE7200A87020 /* Post.swift */,
 				741EDFBA25670C5D00A13F46 /* PhotoGalleryData.swift */,
 				74DE1135262AFA9D00ECD59A /* CredentialsStore */,
+				74DE1137262AFAA700ECD59A /* RealmAuthentication */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -375,6 +378,14 @@
 				7487B033262A232100F25649 /* KeychainPassword.swift */,
 			);
 			path = CredentialsStore;
+			sourceTree = "<group>";
+		};
+		74DE1137262AFAA700ECD59A /* RealmAuthentication */ = {
+			isa = PBXGroup;
+			children = (
+				74053820262AFFFE00AF7CED /* RealmAuthenticationAdapter.swift */,
+			);
+			path = RealmAuthentication;
 			sourceTree = "<group>";
 		};
 		74EAF6A125D1C37400F41122 /* Coordinator */ = {
@@ -555,6 +566,7 @@
 				060782C6250CEB0A00A87020 /* InfoViewController.swift in Sources */,
 				060782CA250CEE7200A87020 /* Post.swift in Sources */,
 				74FCEB10260914990095AFD7 /* RecorderViewController.swift in Sources */,
+				74053821262AFFFE00AF7CED /* RealmAuthenticationAdapter.swift in Sources */,
 				7487B021262A186500F25649 /* AuthenticationManager.swift in Sources */,
 				741124EF2601392C00837B3C /* AudioTrack.swift in Sources */,
 				74EAF6AA25D1C5D000F41122 /* ProfileCoordinator.swift in Sources */,

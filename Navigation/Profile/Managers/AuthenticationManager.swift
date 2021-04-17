@@ -15,17 +15,19 @@ class AuthenticationManager {
         var instance: AuthenticationProviderProtocol
 
         switch AppConstants.authenticationProvider {
-        case .credentialsStore:
-            instance = CredentialsStoreAuthenticationManager()
+        case .keychain:
+            instance = KeychainAuthenticationManager()
         case .firebase:
             instance = FirebaseAuthenticationManager()
+        case .realm:
+            instance = RealmAuthenticationManager()
         }
 
         return instance
     }()
 }
 
-private class CredentialsStoreAuthenticationManager: AuthenticationProviderProtocol {
+private class KeychainAuthenticationManager: AuthenticationProviderProtocol {
 
     private var login: String?
     private var password: String?
@@ -141,7 +143,6 @@ private class CredentialsStoreAuthenticationManager: AuthenticationProviderProto
     }
 
 }
-
 
 private class FirebaseAuthenticationManager: AuthenticationProviderProtocol {
 
@@ -302,4 +303,132 @@ private class FirebaseAuthenticationManager: AuthenticationProviderProtocol {
         }
     }
 
+}
+
+private class RealmAuthenticationManager: AuthenticationProviderProtocol {
+
+    private var login: String?
+    private var password: String?
+
+    /**
+     Stores provided login for subsequent verification
+
+     - parameters:
+        - login: login provided for verifications
+
+     */
+    func submitLogin(_ login: String) {
+        self.login = login
+    }
+
+    /**
+     Stores provided password for subsequent verification
+
+     - parameters:
+        - password: password provided for verifications
+
+     */
+    func submitPassword(_ password: String) {
+        self.password = password
+    }
+
+    /**
+     Verifies credentials stored previously
+
+     - parameters:
+        - completion: returns `failure(error)` if can't allow login, `success(true)` if should allow login and `success(false)` if can register a new user
+
+     - important: This function will issue an alert to user if there is an error.
+
+     */
+    func validateCredentials(withCompletion completion: @escaping AuthenticationCompletionBlock) {
+        guard let login = self.login,
+              !login.isEmpty else {
+            completion(.failure(AuthenticationError.emptyLogin))
+            return
+        }
+        guard let password = self.password,
+              !password.isEmpty else {
+            completion(.failure(AuthenticationError.emptyPassword))
+            return
+        }
+
+        do {
+            try RealmAuthenticationAdapter.shared.signIn(withLogin: login, password: password)
+            completion(.success(true))
+        } catch RealmAuthenticationError.userNotFound {
+            completion(.success(false))
+        } catch RealmAuthenticationError.wrongPassword {
+            completion(.success(false))
+        } catch let error {
+            completion(.failure(error))
+        }
+
+    }
+
+    /**
+     Registers a new user
+
+     - parameters:
+        - completion: returns `failure(error)` if can't allow login and `success(true)` if should allow login
+
+     - important: This function will issue an alert to user if there is an error.
+
+     */
+    func createUser(withCompletion completion: @escaping AuthenticationCompletionBlock) {
+        guard let login = self.login,
+              !login.isEmpty else {
+            completion(.failure(AuthenticationError.emptyLogin))
+            return
+        }
+
+        guard let password = self.password,
+              !password.isEmpty else {
+            completion(.failure(AuthenticationError.emptyPassword))
+            return
+        }
+
+        do {
+            try RealmAuthenticationAdapter.shared.createUser(withLogin: login, password: password)
+            completion(.success(true))
+        } catch RealmAuthenticationError.loginTaken {
+            completion(.failure(AuthenticationError.loginInUse))
+        } catch RealmAuthenticationError.weakPassword {
+            completion(.failure(AuthenticationError.weakPassword("Пароль должен быть не менее 6 символов")))
+        } catch {
+            completion(.failure(error))
+        }
+
+    }
+
+    /**
+     Checks if user is currently logged in
+
+     - parameters:
+        - completion: returns `true` if user is valid and signed in and `false` otherwise
+
+     */
+    func validateUser(withCompletion completion: @escaping ((Bool) -> Void)) {
+        if RealmAuthenticationAdapter.shared.currentUser != nil {
+            completion(true)
+            return
+        }
+        completion(false)
+    }
+
+    /**
+     Logs out current user
+
+     - parameters:
+        - completion: returns `failure(error)` if can't sign out and `success(true)` if signed out successfully
+
+     */
+    func logout(withCompletion completion: AuthenticationCompletionBlock) {
+        do {
+            try RealmAuthenticationAdapter.shared.signOut()
+            completion(.success(true))
+        } catch let error {
+            completion(.failure(error))
+        }
+    }
 }
