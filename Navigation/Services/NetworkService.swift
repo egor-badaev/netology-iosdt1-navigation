@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import EBFoundation
 
 struct NetworkService {
     static func makeDataTask(with url: URL, completion: ((Result<(HTTPURLResponse, Data), Error>) -> Void)? = nil) -> URLSessionDataTask {

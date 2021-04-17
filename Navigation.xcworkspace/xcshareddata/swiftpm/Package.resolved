@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "EBFoundation",
+        "repositoryURL": "https://github.com/egor-badaev/EBFoundation",
+        "state": {
+          "branch": null,
+          "revision": "3e2a3ef27973396d31fe72cc11883c9843708355",
+          "version": "1.0.7"
+        }
+      },
+      {
         "package": "iOSIntPackage",
         "repositoryURL": "https://github.com/TrueMax/iOSIntPackage/",
         "state": {

@@ -8,6 +8,7 @@
 
 import UIKit
 import iOSIntPackage
+import EBFoundation
 
 class PhotosTableViewCell: UITableViewCell {
     
