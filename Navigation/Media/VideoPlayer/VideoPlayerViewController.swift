@@ -17,6 +17,7 @@ class VideoPlayerViewController: UIViewController {
     }
     
     private let reuseID = "cell"
+    private var firstViewLoaded = false
 
     private let webView: WKWebView = {
         let config = WKWebViewConfiguration()
@@ -60,8 +61,14 @@ class VideoPlayerViewController: UIViewController {
         ]
         NSLayoutConstraint.activate(constraints)
         
+    }
+
+
+    func playFirstVideoIfNeeded() {
+        guard !firstViewLoaded else {
+            return
+        }
         playVideo()
-        
     }
     
     private func playVideo(index: Int = 0) {
@@ -78,6 +85,7 @@ class VideoPlayerViewController: UIViewController {
         }
         
         currentIndex = index
+        firstViewLoaded = true
         webView.load(URLRequest(url: url))
     }
 }
@@ -98,5 +106,9 @@ extension VideoPlayerViewController: UITableViewDataSource {
 extension VideoPlayerViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         playVideo(index: indexPath.row)
+    }
+
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return UIView()
     }
 }

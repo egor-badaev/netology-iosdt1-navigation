@@ -54,6 +54,7 @@
 		74A7A16625CDB4DA005D12DE /* PostWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A7A16525CDB4DA005D12DE /* PostWrapperView.swift */; };
 		74A7A17025CDC7A1005D12DE /* FeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A7A16F25CDC7A1005D12DE /* FeedModel.swift */; };
 		74A7A17525CDCDCD005D12DE /* PostButtonFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A7A17425CDCDCD005D12DE /* PostButtonFactory.swift */; };
+		74ADA31D26334094005960A0 /* MediaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ADA31C26334094005960A0 /* MediaViewController.swift */; };
 		74B2B4CC2601529900C0293A /* VideoPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74B2B4C82601529900C0293A /* VideoPlayerViewController.swift */; };
 		74B2B4CD2601529900C0293A /* YoutubeVideoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74B2B4CA2601529900C0293A /* YoutubeVideoModel.swift */; };
 		74B2B4CE2601529900C0293A /* VideoPlaylistProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74B2B4CB2601529900C0293A /* VideoPlaylistProvider.swift */; };
@@ -114,6 +115,7 @@
 		74A7A16525CDB4DA005D12DE /* PostWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostWrapperView.swift; sourceTree = "<group>"; };
 		74A7A16F25CDC7A1005D12DE /* FeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedModel.swift; sourceTree = "<group>"; };
 		74A7A17425CDCDCD005D12DE /* PostButtonFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostButtonFactory.swift; sourceTree = "<group>"; };
+		74ADA31C26334094005960A0 /* MediaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaViewController.swift; sourceTree = "<group>"; };
 		74B2B4C82601529900C0293A /* VideoPlayerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerViewController.swift; sourceTree = "<group>"; };
 		74B2B4CA2601529900C0293A /* YoutubeVideoModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YoutubeVideoModel.swift; sourceTree = "<group>"; };
 		74B2B4CB2601529900C0293A /* VideoPlaylistProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlaylistProvider.swift; sourceTree = "<group>"; };
@@ -167,9 +169,7 @@
 				74EAF6A125D1C37400F41122 /* Coordinator */,
 				743F39E325573D8600F77FE2 /* Feed */,
 				742C78592554614F00B352FF /* Profile */,
-				741124DA2601392C00837B3C /* Player */,
-				74B2B4C72601529900C0293A /* VideoPlayer */,
-				74FCEB0E2609145D0095AFD7 /* Recorder */,
+				74ADA31B2633406C005960A0 /* Media */,
 				060782B1250CE27700A87020 /* AppDelegate.swift */,
 				74756D72256402D4001D5099 /* Helpers */,
 				060782BA250CE27A00A87020 /* Assets.xcassets */,
@@ -351,6 +351,17 @@
 				74A7A16525CDB4DA005D12DE /* PostWrapperView.swift */,
 			);
 			path = FeedViewController;
+			sourceTree = "<group>";
+		};
+		74ADA31B2633406C005960A0 /* Media */ = {
+			isa = PBXGroup;
+			children = (
+				741124DA2601392C00837B3C /* Player */,
+				74B2B4C72601529900C0293A /* VideoPlayer */,
+				74FCEB0E2609145D0095AFD7 /* Recorder */,
+				74ADA31C26334094005960A0 /* MediaViewController.swift */,
+			);
+			path = Media;
 			sourceTree = "<group>";
 		};
 		74B2B4C72601529900C0293A /* VideoPlayer */ = {
@@ -549,6 +560,7 @@
 				74A7A16625CDB4DA005D12DE /* PostWrapperView.swift in Sources */,
 				74EAF6A325D1C38700F41122 /* Coordinator.swift in Sources */,
 				7429E59C26124F36000DA30E /* AppConfiguration.swift in Sources */,
+				74ADA31D26334094005960A0 /* MediaViewController.swift in Sources */,
 				741124F02601392C00837B3C /* PlaylistProvider.swift in Sources */,
 				741124EE2601392C00837B3C /* AVControlButton.swift in Sources */,
 				74756D5F2563C319001D5099 /* LogInViewController.swift in Sources */,
