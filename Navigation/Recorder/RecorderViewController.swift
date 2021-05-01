@@ -18,7 +18,8 @@ class RecorderViewController: UIViewController {
     private lazy var recordButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: "record.circle.fill"), for: .normal)
+        let buttonImage = UIImage(named: "record.circle.fill")
+        button.setImage(buttonImage, for: .normal)
         button.setTitle(RecorderViewController.defaultButtonTitle, for: .normal)
         if #available(iOS 13.0, *) {
             button.setTitleColor(.label, for: .normal)
@@ -35,7 +36,8 @@ class RecorderViewController: UIViewController {
     private lazy var playButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: "play.fill"), for: .normal)
+        let buttonImage = UIImage(named: "play.fill")
+        button.setImage(buttonImage, for: .normal)
         button.setTitle("Play recording", for: .normal)
         if #available(iOS 13.0, *) {
             button.setTitleColor(.label, for: .normal)
@@ -194,8 +196,9 @@ class RecorderViewController: UIViewController {
             player = try AVAudioPlayer(contentsOf: audioFilename)
             player.delegate = self
             player.play()
-            
-            playButton.setImage(UIImage(named: "stop.fill"), for: .normal)
+
+            let stopIcon = UIImage(named: "stop.fill")
+            playButton.setImage(stopIcon, for: .normal)
             playButton.setTitle("Stop playback", for: .normal)
         }
         catch {
@@ -209,8 +212,9 @@ class RecorderViewController: UIViewController {
     private func stopPlayback() {
         player.stop()
         player = nil
-        
-        playButton.setImage(UIImage(named: "play.fill"), for: .normal)
+
+        let playIcon = UIImage(named: "play.fill")
+        playButton.setImage(playIcon, for: .normal)
         playButton.setTitle("Play recording", for: .normal)
     }
     

@@ -50,18 +50,21 @@ final class MainCoordinator {
         }
         
         let playerViewController = PlayerViewController()
-        let playerTabBarItem = UITabBarItem(title: "Player", image: UIImage(named: "Music"), selectedImage: nil)
+        let playerTabBarIcon = UIImage(named: "Music")
+        let playerTabBarItem = UITabBarItem(title: "Player", image: playerTabBarIcon, selectedImage: nil)
         playerViewController.tabBarItem = playerTabBarItem
         
         tabBarViewControllers.append(playerViewController)
         
         let videoViewController = VideoPlayerViewController()
-        let videoTabBarItem = UITabBarItem(title: "Video", image: UIImage(named: "YouTube"), selectedImage: nil)
+        let videoTabBarIcon = UIImage(named: "YouTube")
+        let videoTabBarItem = UITabBarItem(title: "Video", image: videoTabBarIcon, selectedImage: nil)
         videoViewController.tabBarItem = videoTabBarItem
         tabBarViewControllers.append(videoViewController)
         
         let recorderViewController = RecorderViewController()
-        let recorderTabBarItem = UITabBarItem(title: "Recorder", image: UIImage(named: "Microphone"), selectedImage: nil)
+        let recorderTabBarIcon = UIImage(named: "Microphone")
+        let recorderTabBarItem = UITabBarItem(title: "Recorder", image: recorderTabBarIcon, selectedImage: nil)
         recorderViewController.tabBarItem = recorderTabBarItem
         tabBarViewControllers.append(recorderViewController)
         

@@ -19,7 +19,8 @@ final class FeedCoordinator: Coordinator {
     }
     
     func start() {
-        let feedTabBarItem = UITabBarItem(title: AppConstants.feedViewControllerTitle, image: UIImage(named: "Home"), selectedImage: nil)
+        let feedTabBarIcon = UIImage(named: "Home")
+        let feedTabBarItem = UITabBarItem(title: AppConstants.feedViewControllerTitle, image: feedTabBarIcon, selectedImage: nil)
         navigationController.tabBarItem = feedTabBarItem
     }
         

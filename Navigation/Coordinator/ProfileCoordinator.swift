@@ -18,7 +18,8 @@ final class ProfileCoordinator: Coordinator {
     }
         
     func start() {
-        let profileTabBarItem = UITabBarItem(title: "Profile", image: UIImage(named: "Profile"), selectedImage: nil)
+        let profileTabBarIcon = UIImage(named: "Profile")
+        let profileTabBarItem = UITabBarItem(title: "Profile", image: profileTabBarIcon, selectedImage: nil)
         navigationController.tabBarItem = profileTabBarItem
     }
     
@@ -29,7 +30,8 @@ final class ProfileCoordinator: Coordinator {
     }
     
     func showPhotos() {
-        navigationController.pushViewController(PhotosViewController(), animated: true)
+        let photosViewController = PhotosViewController()
+        navigationController.pushViewController(photosViewController, animated: true)
     }
     
     func logout() {
