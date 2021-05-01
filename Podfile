@@ -9,7 +9,7 @@ target 'Navigation' do
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'KeychainAccess'
-  pod 'RealmSwift', '=10.1.4'
+  pod 'RealmSwift', '=10.5.2'
 
 end
 
