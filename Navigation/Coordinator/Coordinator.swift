@@ -16,7 +16,7 @@ protocol Coordinator: AnyObject {
 }
 
 extension Coordinator {
-    func showAlert(title: String?, message: String?, actions: [UIAlertAction] = [], completion: (() -> Void)? = nil) {
+    func showAlert(title: String?, message: String?, actions: [UIAlertAction] = []) {
 
         DispatchQueue.main.async {
             let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -37,7 +37,7 @@ extension Coordinator {
 
             if let _ = presentingController.presentedViewController { return }
 
-            presentingController.present(alertController, animated: true, completion: completion)
+            presentingController.present(alertController, animated: true)
         }
     }
     
@@ -50,8 +50,9 @@ extension Coordinator {
     }
 
     func showAlertAndClose(title: String? = nil, message: String? = nil) {
-        self.showAlert(title: title ?? "Ошибка", message: message, actions: [UIAlertAction(title: "OK", style: .default, handler: { _ in
+        let action = UIAlertAction(title: "OK", style: .default, handler: { _ in
             self.closeCurrentController()
-        })])
+        })
+        self.showAlert(title: title ?? "Ошибка", message: message, actions: [action])
     }
 }

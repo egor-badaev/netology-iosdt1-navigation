@@ -259,8 +259,7 @@ class LogInViewController: ExtendedViewController {
                     self.coordinator?.showAlert(
                         title: "Указанная комбинация логина и пароля не найдена",
                         message: "Хотите зарегистрировать нового пользователя с указанными email и паролем?",
-                        actions: [registerAction, cancelAction],
-                        completion: nil)
+                        actions: [registerAction, cancelAction])
                 }
                 return
             }
