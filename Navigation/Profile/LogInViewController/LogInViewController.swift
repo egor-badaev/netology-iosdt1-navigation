@@ -228,14 +228,13 @@ class LogInViewController: ExtendedViewController {
             self.toggleActivity(loading: false)
             switch result {
             case .failure(let error):
-                self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: error.localizedDescription)
+                self.coordinator?.showAlert(title: "Ошибка", message: error.localizedDescription)
                 return
             case .success(let allowedLogin):
                 if allowedLogin {
                     self.coordinator?.login()
                 } else {
                     self.coordinator?.showAlert(
-                        presentedOn: self,
                         title: "Указанная комбинация логина и пароля не найдена",
                         message: "Хотите зарегистрировать нового пользователя с указанными email и паролем?",
                         actions: [
@@ -248,7 +247,7 @@ class LogInViewController: ExtendedViewController {
                                         self.toggleActivity(loading: false)
                                         switch registerResult {
                                         case .failure(let registerError):
-                                            self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: registerError.localizedDescription)
+                                            self.coordinator?.showAlert(title: "Ошибка", message: registerError.localizedDescription)
                                             return
                                         case .success(_):
                                             self.coordinator?.login()

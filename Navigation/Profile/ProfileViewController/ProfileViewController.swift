@@ -132,7 +132,7 @@ class ProfileViewController: UIViewController {
                 guard let self = self else { return }
                 switch result {
                 case .failure( _):
-                    self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: "Невозможно выполнить выход")
+                    self.coordinator?.showAlert(title: "Ошибка", message: "Невозможно выполнить выход")
                 case .success( _):
                     self.coordinator?.logout()
                 }
