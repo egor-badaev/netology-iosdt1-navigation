@@ -40,9 +40,9 @@ final class FeedCoordinator: Coordinator {
             showAlert(title: "Ошибка", message: "Невозможно отобразить пост")
             return
         }
-        let toDoUrl = FeedModel.shared.posts[selectedPostIndex].toDoUrl
-        let planetUrl = FeedModel.shared.posts[selectedPostIndex].planetUrl
-        let infoViewController = InfoViewController(toDoUrl: toDoUrl, planetUrl: planetUrl)
+        let infoViewModel = InfoViewModel(forPostWithIndex: selectedPostIndex)
+        let infoViewController = InfoViewController(viewModel: infoViewModel)
+        infoViewModel.viewInput = infoViewController
         infoViewController.coordinator = self
         navigationController.present(infoViewController, animated: true, completion: nil)
     }

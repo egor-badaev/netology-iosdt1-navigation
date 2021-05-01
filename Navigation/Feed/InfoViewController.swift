@@ -8,13 +8,35 @@
 
 import UIKit
 
+// MARK: - Protocols
+protocol InfoViewControllerOutput {
+    // MARK: Header
+    var titleLabelText: String? { get }
+    var periodLabelText: String? { get }
+    var planetNameText: String { get }
+    var shouldDisplayUI: Bool { get }
+    func fetchData()
+
+    // MARK: Residents table
+    var numberOfRows: Int { get }
+    var shouldDisplayTable: Bool { get }
+    func textLabelForRow(index: Int) -> String
+}
+
+protocol InfoViewControllerInput: AnyObject {
+    func displayUI()
+    func showResidentsTableIfReady()
+    func showNoResidentsLabel()
+    func closeController(for error: Error?)
+}
+
+// MARK: - Implementation
 class InfoViewController: UIViewController {
 
-    // MARK: - Public properties
+    // MARK: - Properties
     
-    var toDoUrlSting: String
-    var planetUrlString: String
     weak var coordinator: FeedCoordinator?
+    private let viewModel: InfoViewControllerOutput
     
     // MARK: - Views
     
@@ -55,7 +77,7 @@ class InfoViewController: UIViewController {
         
         alertButton.toAutoLayout()
         alertButton.setTitle("Show alert", for: .normal)
-        alertButton.addTarget(self, action: #selector(showAlert(_:)), for: .touchUpInside)
+        alertButton.addTarget(self, action: #selector(showAlertButtonTapped(_:)), for: .touchUpInside)
         
         return alertButton
     }()
@@ -109,24 +131,14 @@ class InfoViewController: UIViewController {
         
         return label
     }()
-    
-    // MARK: - Private properties
-    
-    private var toDoDataTask: URLSessionDataTask?
-    private var planetDataTask: URLSessionDataTask?
-    private var residents: [Person] = []
-    private var activeDataTasks = 0
-    private var planetName: String = ""
-    
+
     // MARK: - Life cycle
     
-    init(toDoUrl: String, planetUrl: String) {
-        toDoUrlSting = toDoUrl
-        planetUrlString = planetUrl
-        
+    init(viewModel: InfoViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -135,7 +147,7 @@ class InfoViewController: UIViewController {
         super.viewDidLoad()
 
         setupUI()
-        fetchData()
+        viewModel.fetchData()
     }
     
     // MARK: - UI methods
@@ -179,17 +191,48 @@ class InfoViewController: UIViewController {
         
     }
 
-    private func displayUI() {
-        
-        guard toDoDataTask?.state != .running,
-              planetDataTask?.state != .running else {
+
+    // MARK: - Actions
+    
+    @objc private func showAlertButtonTapped(_ sender: Any) {
+        coordinator?.showDeletePostAlert()
+    }
+}
+
+// MARK: - InfoViewControllerInput
+
+extension InfoViewController: InfoViewControllerInput {
+    func displayUI() {
+
+        guard viewModel.shouldDisplayUI else {
             print("Some tasks still running")
             return
         }
 
-        show(view: containerView, andHide: loader)
+        DispatchQueue.main.async {
+            self.postTitleLabel.text = self.viewModel.titleLabelText
+            self.planetOrbitalPeriodLabel.text = self.viewModel.periodLabelText
+            self.show(view: self.containerView, andHide: self.loader)
+        }
     }
-    
+
+    func showResidentsTableIfReady() {
+        guard viewModel.shouldDisplayTable else { return }
+        print("Reloading TableView")
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.residentsTableView.reloadData()
+            self.show(view: self.residentsTableView, andHide: self.tableLoader)
+        }
+    }
+
+    func showNoResidentsLabel() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.show(view: self.noResidentsLabel, andHide: self.tableLoader)
+        }
+    }
+
     private func show(view: UIView, andHide loader: UIActivityIndicatorView) {
         UIView.animate(withDuration: AppConstants.animationDuration) {
             loader.alpha = 0.0
@@ -202,148 +245,26 @@ class InfoViewController: UIViewController {
             }
         }
     }
-    
-    private func showResidentsTableIfReady() {
-        guard activeDataTasks == 0 else { return }
-        print("Reloading TableView")
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.residentsTableView.reloadData()
-            self.show(view: self.residentsTableView, andHide: self.tableLoader)
-        }
+
+    func closeController(for error: Error?) {
+        coordinator?.showAlertAndClose(message: error?.localizedDescription)
     }
 
-    // MARK: - Data methods
-    
-    private func fetchData() {
-        guard let toDoUrl = URL(string: toDoUrlSting),
-              let planetUrl = URL(string: planetUrlString) else {
-            print("Can't create URL from the string provided")
-            coordinator?.showAlertAndClose()
-            return
-        }
-        
-        toDoDataTask = NetworkService.makeDataTask(with: toDoUrl) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .failure(let error):
-                print("NetworkService failure: \(error.localizedDescription)")
-                self.coordinator?.showAlertAndClose(title: "Ошибка", message: error.localizedDescription)
-            case .success(let (_, data)):
-                do {
-                    if let dictionary = try data.toObject(),
-                       let toDo = ToDo(from: dictionary) {
-                        DispatchQueue.main.async {
-                            self.postTitleLabel.text = toDo.title
-                            self.displayUI()
-                        }
-                    } else {
-                        print("JSON data has unknown format")
-                        self.coordinator?.showAlertAndClose(title: "Ошибка", message: "Данные неверного формата!")
-                    }
-                } catch {
-                    print("Data parsing failed")
-                    self.coordinator?.showAlertAndClose(title: "Ошибка", message: "Невозможно обработать данные!")
-                }
-            }
-        }
-        toDoDataTask?.resume()
-        
-        planetDataTask = NetworkService.makeDataTask(with: planetUrl, completion: { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .failure(let error):
-                print("NetworkService failure: \(error.localizedDescription)")
-                self.coordinator?.showAlertAndClose(title: "Ошибка", message: error.localizedDescription)
-            case .success(let (_, data)):
-                do {
-                    let planet = try JSONDecoder().decode(Planet.self, from: data)
-                    
-                    var period: String
-                    
-                    if let planetName = planet.name {
-                        self.planetName = "планеты \"\(planetName)\""
-                    } else {
-                        self.planetName = "неизвестной планеты"
-                    }
-                    
-                    if let planetPeriod = planet.orbitalPeriod {
-                        let days = planetPeriod.pluralForm(of: PluralizableString(one: "день", few: "дня", many: "дней"))
-                        period = "составляет \(days)"
-                    } else {
-                        period = "неизвестен"
-                    }
-                                        
-                    DispatchQueue.main.async {
-                        self.planetOrbitalPeriodLabel.text = "Период обращения \(self.planetName) по своей орбите \(period)"
-                        self.displayUI()
-                    }
-
-                    self.fetchResidents(from: planet.residents)
-
-                } catch {
-                    print("Decoding failed: \(error)")
-                    self.coordinator?.showAlertAndClose(title: "Ошибка", message: "Возникла ошибка при распознавании данных")
-                }
-            }
-        })
-        planetDataTask?.resume()
-    }
-    
-    private func fetchResidents(from urls: [URL]) {
-        guard !urls.isEmpty else {
-            print("No residents on the planet")
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.show(view: self.noResidentsLabel, andHide: self.tableLoader)
-            }
-            return
-        }
-        
-        urls.forEach { url in
-            activeDataTasks += 1
-            NetworkService.startDataTask(with: url) { [weak self] result in
-                guard let self = self else { return }
-                self.activeDataTasks -= 1
-                
-                switch result {
-                case .failure(let error):
-                    print("NetworkService failure: \(error.localizedDescription)")
-                    self.coordinator?.showAlertAndClose(title: "Ошибка", message: error.localizedDescription)
-                case .success(let (_, data)):
-                    do {
-                        let person = try JSONDecoder().decode(Person.self, from: data)
-                        self.residents.append(person)
-                        self.showResidentsTableIfReady()
-                    } catch {
-                        print(error)
-                    }
-                }
-            }
-        }
-    }
-    
-    // MARK: - Actions
-    
-    @objc private func showAlert(_ sender: Any) {
-        coordinator?.showDeletePostAlert()
-    }
 }
 
 // MARK: - UITableViewDataSource
 
 extension InfoViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return residents.count
+        return viewModel.numberOfRows
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UITableViewCell.self)) else {
             return UITableViewCell()
         }
-        
-        cell.textLabel?.text = residents[indexPath.row].name
+
+        cell.textLabel?.text = viewModel.textLabelForRow(index: indexPath.row)
         cell.textLabel?.font = .systemFont(ofSize: 14)
         cell.textLabel?.textColor = .black
         cell.backgroundColor = .init(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.5)
@@ -363,7 +284,7 @@ extension InfoViewController: UITableViewDelegate {
         guard section == 0 else { return nil }
         let headerView = UITableViewHeaderFooterView()
         headerView.contentView.backgroundColor = .systemYellow
-        headerView.textLabel?.text = "Резиденты \(planetName)"
+        headerView.textLabel?.text = "Резиденты \(viewModel.planetNameText)"
         return headerView
     }
     
