@@ -128,15 +128,9 @@ class ProfileViewController: UIViewController {
         headerView.avatarImageView.isUserInteractionEnabled = true
         headerView.avatarImageView.addGestureRecognizer(tapGestureRecognizer)
         headerView.logoutCompletion = { [weak self] in
-            AuthenticationManager.shared.logout { result in
-                guard let self = self else { return }
-                switch result {
-                case .failure( _):
-                    self.coordinator?.showAlert(presentedOn: self, title: "Ошибка", message: "Невозможно выполнить выход")
-                case .success( _):
-                    self.coordinator?.logout()
-                }
-            }
+            guard let self = self,
+                  let coordinator = self.coordinator else { return }
+            coordinator.logout(fromController: self)
         }
     }
 

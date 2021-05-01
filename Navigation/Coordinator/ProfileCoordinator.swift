@@ -34,7 +34,15 @@ final class ProfileCoordinator: Coordinator {
         navigationController.pushViewController(photosViewController, animated: true)
     }
     
-    func logout() {
-        navigationController.popToRootViewController(animated: true)
+    func logout(fromController controller: UIViewController) {
+        AuthenticationManager.shared.logout { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .failure( _):
+                self.showAlert(presentedOn: controller, title: "Ошибка", message: "Невозможно выполнить выход")
+            case .success( _):
+                self.navigationController.popToRootViewController(animated: true)
+            }
+        }
     }
 }
