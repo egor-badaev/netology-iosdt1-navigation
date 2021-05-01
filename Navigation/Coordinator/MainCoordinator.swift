@@ -50,7 +50,8 @@ final class MainCoordinator {
         }
         
         let mediaViewController = MediaViewController()
-        let mediaTabBarItem = UITabBarItem(title: "Media", image: UIImage(named: "Music"), selectedImage: nil)
+        let mediaTabBarIcon = UIImage(named: "Music")
+        let mediaTabBarItem = UITabBarItem(title: "Media", image: mediaTabBarIcon, selectedImage: nil)
         mediaViewController.tabBarItem = mediaTabBarItem
 
         tabBarViewControllers.append(mediaViewController)

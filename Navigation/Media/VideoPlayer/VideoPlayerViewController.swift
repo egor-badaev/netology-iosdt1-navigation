@@ -12,7 +12,9 @@ class VideoPlayerViewController: UIViewController {
 
     private var currentIndex = 0 {
         didSet {
-            tableView.reloadRows(at: [IndexPath(row: oldValue, section: 0), IndexPath(row: currentIndex, section: 0)], with: .none)
+            let oldIndexPath = IndexPath(row: oldValue, section: 0)
+            let newIndexPath = IndexPath(row: currentIndex, section: 0)
+            tableView.reloadRows(at: [oldIndexPath, newIndexPath], with: .none)
         }
     }
     
@@ -86,7 +88,8 @@ class VideoPlayerViewController: UIViewController {
         
         currentIndex = index
         firstViewLoaded = true
-        webView.load(URLRequest(url: url))
+        let request = URLRequest(url: url)
+        webView.load(request)
     }
 }
 

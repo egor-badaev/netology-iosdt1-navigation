@@ -12,6 +12,8 @@ import EBFoundation
 
 class LogInViewController: ExtendedViewController {
     
+    typealias RegisterHandler = (UIAlertAction) -> Void
+
     // MARK: - Constants
     
     private enum Constants {
@@ -234,30 +236,30 @@ class LogInViewController: ExtendedViewController {
                 if allowedLogin {
                     self.coordinator?.login()
                 } else {
+
+                    let registerHandler: RegisterHandler = { [weak self] _ in
+                        guard let self = self else { return }
+
+                        self.toggleActivity(loading: true)
+                        AuthenticationManager.shared.createUser(withCompletion: { registerResult in
+                            self.toggleActivity(loading: false)
+                            switch registerResult {
+                            case .failure(let registerError):
+                                self.coordinator?.showAlert(title: "Ошибка", message: registerError.localizedDescription)
+                                return
+                            case .success(_):
+                                self.coordinator?.login()
+                            }
+                        })
+                    }
+
+                    let registerAction = UIAlertAction(title: "Зарегистрироваться", style: .default, handler: registerHandler)
+                    let cancelAction = UIAlertAction(title: "Попробовать ещё раз", style: .cancel, handler: nil)
+
                     self.coordinator?.showAlert(
                         title: "Указанная комбинация логина и пароля не найдена",
                         message: "Хотите зарегистрировать нового пользователя с указанными email и паролем?",
-                        actions: [
-                            UIAlertAction(
-                                title: "Зарегистрироваться",
-                                style: .default,
-                                handler: { action in
-                                    self.toggleActivity(loading: true)
-                                    AuthenticationManager.shared.createUser(withCompletion: { registerResult in
-                                        self.toggleActivity(loading: false)
-                                        switch registerResult {
-                                        case .failure(let registerError):
-                                            self.coordinator?.showAlert(title: "Ошибка", message: registerError.localizedDescription)
-                                            return
-                                        case .success(_):
-                                            self.coordinator?.login()
-                                        }
-                                    })
-                                }),
-                            UIAlertAction(
-                                title: "Попробовать ещё раз",
-                                style: .cancel,
-                                handler: nil)],
+                        actions: [registerAction, cancelAction],
                         completion: nil)
                 }
                 return

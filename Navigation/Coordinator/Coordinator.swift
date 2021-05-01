@@ -23,7 +23,8 @@ extension Coordinator {
             if !actions.isEmpty {
                 actions.forEach { alertController.addAction($0) }
             } else {
-                alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                alertController.addAction(okAction)
             }
 
             var presentingController: UIViewController

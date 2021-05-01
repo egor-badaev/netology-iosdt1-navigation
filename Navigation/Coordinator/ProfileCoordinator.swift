@@ -18,7 +18,8 @@ final class ProfileCoordinator: Coordinator {
     }
         
     func start() {
-        let profileTabBarItem = UITabBarItem(title: "Profile", image: UIImage(named: "Profile"), selectedImage: nil)
+        let profileTabBarIcon = UIImage(named: "Profile")
+        let profileTabBarItem = UITabBarItem(title: "Profile", image: profileTabBarIcon, selectedImage: nil)
         navigationController.tabBarItem = profileTabBarItem
     }
     
@@ -29,10 +30,19 @@ final class ProfileCoordinator: Coordinator {
     }
     
     func showPhotos() {
-        navigationController.pushViewController(PhotosViewController(), animated: true)
+        let photosViewController = PhotosViewController()
+        navigationController.pushViewController(photosViewController, animated: true)
     }
     
     func logout() {
-        navigationController.popToRootViewController(animated: true)
+        AuthenticationManager.shared.logout { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .failure( _):
+                self.showAlert(title: "Ошибка", message: "Невозможно выполнить выход")
+            case .success( _):
+                self.navigationController.popToRootViewController(animated: true)
+            }
+        }
     }
 }

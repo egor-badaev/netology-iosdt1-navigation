@@ -99,7 +99,9 @@ class PlayerManager: NSObject {
         let audioTrack = playlist[index]
         
         do {
-            player = try AVAudioPlayer(contentsOf: URL.init(fileURLWithPath: Bundle.main.path(forResource: audioTrack.filename, ofType: audioTrack.filetype.rawValue)!))
+            guard let path = Bundle.main.path(forResource: audioTrack.filename, ofType: audioTrack.filetype.rawValue) else { return }
+            let url = URL.init(fileURLWithPath: path)
+            player = try AVAudioPlayer(contentsOf: url)
             player.delegate = self
             player.prepareToPlay()
         }

@@ -17,7 +17,8 @@ class AVControlButton: UIButton {
             self.tintColor = .black
         }
         self.translatesAutoresizingMaskIntoConstraints = false
-        self.setImage(UIImage(named: imageName), for: .normal)
+        let image = UIImage(named: imageName)
+        self.setImage(image, for: .normal)
         self.addTarget(controller, action: selector, for: .touchUpInside)
     }
 }
