@@ -37,10 +37,7 @@ final class FeedCoordinator: Coordinator {
     
     func showPostInfo() {
         guard let selectedPostIndex = selectedPostIndex else {
-            guard let topViewController = navigationController.topViewController else {
-                return
-            }
-            showAlert(presentedOn: topViewController, title: "Ошибка", message: "Невозможно отобразить пост")
+            showAlert(title: "Ошибка", message: "Невозможно отобразить пост")
             return
         }
         let toDoUrl = FeedModel.shared.posts[selectedPostIndex].toDoUrl
@@ -50,13 +47,13 @@ final class FeedCoordinator: Coordinator {
         navigationController.present(infoViewController, animated: true, completion: nil)
     }
     
-    func showDeletePostAlert(presentedOn viewController: UIViewController) {
+    func showDeletePostAlert() {
         let cancelAction = UIAlertAction(title: "Отмена", style: .default) { _ in
             print("Отмена")
         }
         let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { _ in
             print("Удалить")
         }
-        self.showAlert(presentedOn: viewController, title: "Удалить пост?", message: "Пост нельзя будет восстановить", actions: [cancelAction, deleteAction])
+        showAlert(title: "Удалить пост?", message: "Пост нельзя будет восстановить", actions: [cancelAction, deleteAction])
     }
 }

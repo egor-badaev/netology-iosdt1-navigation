@@ -219,7 +219,7 @@ class InfoViewController: UIViewController {
         guard let toDoUrl = URL(string: toDoUrlSting),
               let planetUrl = URL(string: planetUrlString) else {
             print("Can't create URL from the string provided")
-            coordinator?.showAlertAndClose(self)
+            coordinator?.showAlertAndClose()
             return
         }
         
@@ -228,7 +228,7 @@ class InfoViewController: UIViewController {
             switch result {
             case .failure(let error):
                 print("NetworkService failure: \(error.localizedDescription)")
-                self.coordinator?.showAlertAndClose(self, title: "Ошибка", message: error.localizedDescription)
+                self.coordinator?.showAlertAndClose(title: "Ошибка", message: error.localizedDescription)
             case .success(let (_, data)):
                 do {
                     if let dictionary = try data.toObject(),
@@ -239,11 +239,11 @@ class InfoViewController: UIViewController {
                         }
                     } else {
                         print("JSON data has unknown format")
-                        self.coordinator?.showAlertAndClose(self, title: "Ошибка", message: "Данные неверного формата!")
+                        self.coordinator?.showAlertAndClose(title: "Ошибка", message: "Данные неверного формата!")
                     }
                 } catch {
                     print("Data parsing failed")
-                    self.coordinator?.showAlertAndClose(self, title: "Ошибка", message: "Невозможно обработать данные!")
+                    self.coordinator?.showAlertAndClose(title: "Ошибка", message: "Невозможно обработать данные!")
                 }
             }
         }
@@ -255,7 +255,7 @@ class InfoViewController: UIViewController {
             switch result {
             case .failure(let error):
                 print("NetworkService failure: \(error.localizedDescription)")
-                self.coordinator?.showAlertAndClose(self, title: "Ошибка", message: error.localizedDescription)
+                self.coordinator?.showAlertAndClose(title: "Ошибка", message: error.localizedDescription)
             case .success(let (_, data)):
                 do {
                     let planet = try JSONDecoder().decode(Planet.self, from: data)
@@ -284,7 +284,7 @@ class InfoViewController: UIViewController {
 
                 } catch {
                     print("Decoding failed: \(error)")
-                    self.coordinator?.showAlertAndClose(self, title: "Ошибка", message: "Возникла ошибка при распознавании данных")
+                    self.coordinator?.showAlertAndClose(title: "Ошибка", message: "Возникла ошибка при распознавании данных")
                 }
             }
         })
@@ -310,7 +310,7 @@ class InfoViewController: UIViewController {
                 switch result {
                 case .failure(let error):
                     print("NetworkService failure: \(error.localizedDescription)")
-                    self.coordinator?.showAlertAndClose(self, title: "Ошибка", message: error.localizedDescription)
+                    self.coordinator?.showAlertAndClose(title: "Ошибка", message: error.localizedDescription)
                 case .success(let (_, data)):
                     do {
                         let person = try JSONDecoder().decode(Person.self, from: data)
@@ -327,7 +327,7 @@ class InfoViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func showAlert(_ sender: Any) {
-        coordinator?.showDeletePostAlert(presentedOn: self)
+        coordinator?.showDeletePostAlert()
     }
 }
 

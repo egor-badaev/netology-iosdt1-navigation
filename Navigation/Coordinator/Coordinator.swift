@@ -16,7 +16,7 @@ protocol Coordinator: AnyObject {
 }
 
 extension Coordinator {
-    func showAlert(presentedOn viewController: UIViewController, title: String?, message: String?, actions: [UIAlertAction] = [], completion: (() -> Void)? = nil) {
+    func showAlert(title: String?, message: String?, actions: [UIAlertAction] = [], completion: (() -> Void)? = nil) {
 
         DispatchQueue.main.async {
             let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -25,7 +25,18 @@ extension Coordinator {
             } else {
                 alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             }
-            viewController.present(alertController, animated: true, completion: completion)
+
+            var presentingController: UIViewController
+
+            if let presentedViewController = self.navigationController.presentedViewController {
+                presentingController = presentedViewController
+            } else {
+                presentingController = self.navigationController
+            }
+
+            if let _ = presentingController.presentedViewController { return }
+
+            presentingController.present(alertController, animated: true, completion: completion)
         }
     }
     
@@ -37,8 +48,8 @@ extension Coordinator {
         }
     }
 
-    func showAlertAndClose(_ viewController: UIViewController, title: String? = nil, message: String? = nil) {
-        self.showAlert(presentedOn: viewController, title: title ?? "Ошибка", message: message, actions: [UIAlertAction(title: "OK", style: .default, handler: { _ in
+    func showAlertAndClose(title: String? = nil, message: String? = nil) {
+        self.showAlert(title: title ?? "Ошибка", message: message, actions: [UIAlertAction(title: "OK", style: .default, handler: { _ in
             self.closeCurrentController()
         })])
     }
