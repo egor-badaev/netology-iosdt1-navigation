@@ -8,26 +8,12 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController {
-    
+class ProfileViewController: BasePostsViewController {
+
     weak var coordinator: ProfileCoordinator?
-    
+
     //MARK: - Subviews
-    
-    private lazy var postsTableView: UITableView = {
-        let tableView = UITableView()
-        
-        tableView.toAutoLayout()
-        
-        tableView.register(PostTableViewCell.self, forCellReuseIdentifier: PostTableViewCell.reuseIdentifier)
-        tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: PhotosTableViewCell.reuseIdentifier)
-        
-        tableView.dataSource = self
-        tableView.delegate = self
-        
-        return tableView
-    }()
-    
+
     private let headerView = ProfileHeaderView()
 
     private lazy var tintView: UIView = {
@@ -82,7 +68,8 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupUI()
+        configureViews()
+        configureTableView(dataSource: self, delegate: self)
     }
     
     override func viewDidLayoutSubviews() {
@@ -104,26 +91,8 @@ class ProfileViewController: UIViewController {
 
     // MARK: - Private methods
 
-    private func setupUI() {
+    private func configureViews() {
         
-        if #available(iOS 13.0, *) {
-            view.backgroundColor = .systemBackground
-        } else {
-            // Fallback on earlier versions
-            view.backgroundColor = .white
-        }
-        
-        view.addSubview(postsTableView)
-        
-        let constraints = [
-            postsTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            postsTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            postsTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            postsTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ]
-        
-        NSLayoutConstraint.activate(constraints)
-
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(avatarTapped(_:)))
         headerView.avatarImageView.isUserInteractionEnabled = true
         headerView.avatarImageView.addGestureRecognizer(tapGestureRecognizer)

@@ -40,6 +40,10 @@
 		742C831B26177BC300D28FB3 /* AsyncImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742C831A26177BC300D28FB3 /* AsyncImageProcessor.swift */; };
 		742C831E2617992200D28FB3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 742C831D2617992100D28FB3 /* GoogleService-Info.plist */; };
 		743F39E725573DD500F77FE2 /* PostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743F39E625573DD500F77FE2 /* PostButton.swift */; };
+		746B9E97263F391900C43A74 /* FavoritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746B9E96263F391900C43A74 /* FavoritesViewController.swift */; };
+		746B9E99263F394500C43A74 /* FavoritesCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746B9E98263F394500C43A74 /* FavoritesCoordinator.swift */; };
+		746B9E9B263F3A4900C43A74 /* BaseCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746B9E9A263F3A4900C43A74 /* BaseCoordinator.swift */; };
+		746B9E9D263F4F3900C43A74 /* BasePostsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746B9E9C263F4F3900C43A74 /* BasePostsViewController.swift */; };
 		746F84F725C89E6D005C3026 /* iOSIntPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 746F84F625C89E6D005C3026 /* iOSIntPackage */; };
 		746F851D25C9D8CE005C3026 /* CredentialsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746F851C25C9D8CE005C3026 /* CredentialsStore.swift */; };
 		746F852225C9E0D1005C3026 /* AuthenticationProviderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746F852125C9E0D1005C3026 /* AuthenticationProviderProtocol.swift */; };
@@ -104,6 +108,10 @@
 		742C831A26177BC300D28FB3 /* AsyncImageProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageProcessor.swift; sourceTree = "<group>"; };
 		742C831D2617992100D28FB3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		743F39E625573DD500F77FE2 /* PostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostButton.swift; sourceTree = "<group>"; };
+		746B9E96263F391900C43A74 /* FavoritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewController.swift; sourceTree = "<group>"; };
+		746B9E98263F394500C43A74 /* FavoritesCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesCoordinator.swift; sourceTree = "<group>"; };
+		746B9E9A263F3A4900C43A74 /* BaseCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCoordinator.swift; sourceTree = "<group>"; };
+		746B9E9C263F4F3900C43A74 /* BasePostsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePostsViewController.swift; sourceTree = "<group>"; };
 		746F851C25C9D8CE005C3026 /* CredentialsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsStore.swift; sourceTree = "<group>"; };
 		746F852125C9E0D1005C3026 /* AuthenticationProviderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationProviderProtocol.swift; sourceTree = "<group>"; };
 		74756D5E2563C319001D5099 /* LogInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
@@ -171,6 +179,7 @@
 				74EAF6A125D1C37400F41122 /* Coordinator */,
 				743F39E325573D8600F77FE2 /* Feed */,
 				742C78592554614F00B352FF /* Profile */,
+				746B9E95263F38F900C43A74 /* Favorites */,
 				74ADA31B2633406C005960A0 /* Media */,
 				060782B1250CE27700A87020 /* AppDelegate.swift */,
 				74756D72256402D4001D5099 /* Helpers */,
@@ -266,6 +275,14 @@
 			path = Feed;
 			sourceTree = "<group>";
 		};
+		746B9E95263F38F900C43A74 /* Favorites */ = {
+			isa = PBXGroup;
+			children = (
+				746B9E96263F391900C43A74 /* FavoritesViewController.swift */,
+			);
+			path = Favorites;
+			sourceTree = "<group>";
+		};
 		746F851B25C9D7EE005C3026 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -287,6 +304,7 @@
 		749FDF8A2567BC7700C53F58 /* ProfileViewController */ = {
 			isa = PBXGroup;
 			children = (
+				746B9E9C263F4F3900C43A74 /* BasePostsViewController.swift */,
 				742C785E255461C500B352FF /* ProfileViewController.swift */,
 				742C785A2554618200B352FF /* ProfileHeaderView.swift */,
 				742C7868255496BD00B352FF /* StatusTextField.swift */,
@@ -406,9 +424,11 @@
 			isa = PBXGroup;
 			children = (
 				74EAF6A225D1C38700F41122 /* Coordinator.swift */,
+				746B9E9A263F3A4900C43A74 /* BaseCoordinator.swift */,
 				74EAF6A525D1C42900F41122 /* MainCoordinator.swift */,
 				74EAF6A925D1C5D000F41122 /* ProfileCoordinator.swift */,
 				74EAF6AE25D1D50400F41122 /* FeedCoordinator.swift */,
+				746B9E98263F394500C43A74 /* FavoritesCoordinator.swift */,
 			);
 			path = Coordinator;
 			sourceTree = "<group>";
@@ -560,10 +580,12 @@
 				74972DFA25651F2900B29277 /* PostTableViewCell.swift in Sources */,
 				74F189762601574A00D66AA6 /* PlayerManager.swift in Sources */,
 				74B2B4CE2601529900C0293A /* VideoPlaylistProvider.swift in Sources */,
+				746B9E97263F391900C43A74 /* FavoritesViewController.swift in Sources */,
 				74A7A16625CDB4DA005D12DE /* PostWrapperView.swift in Sources */,
 				74EAF6A325D1C38700F41122 /* Coordinator.swift in Sources */,
 				7429E59C26124F36000DA30E /* AppConfiguration.swift in Sources */,
 				74ADA31D26334094005960A0 /* MediaViewController.swift in Sources */,
+				746B9E9B263F3A4900C43A74 /* BaseCoordinator.swift in Sources */,
 				741124F02601392C00837B3C /* PlaylistProvider.swift in Sources */,
 				741124EE2601392C00837B3C /* AVControlButton.swift in Sources */,
 				74756D5F2563C319001D5099 /* LogInViewController.swift in Sources */,
@@ -578,6 +600,7 @@
 				743F39E725573DD500F77FE2 /* PostButton.swift in Sources */,
 				742080F8263D7FA700238609 /* InfoViewModel.swift in Sources */,
 				741EDFC02567250600A13F46 /* PhotosViewController.swift in Sources */,
+				746B9E9D263F4F3900C43A74 /* BasePostsViewController.swift in Sources */,
 				7429E59926124E73000DA30E /* NetworkService.swift in Sources */,
 				060782C6250CEB0A00A87020 /* InfoViewController.swift in Sources */,
 				060782CA250CEE7200A87020 /* Post.swift in Sources */,
@@ -585,6 +608,7 @@
 				74053821262AFFFE00AF7CED /* RealmAuthenticationAdapter.swift in Sources */,
 				7487B021262A186500F25649 /* AuthenticationManager.swift in Sources */,
 				741124EF2601392C00837B3C /* AudioTrack.swift in Sources */,
+				746B9E99263F394500C43A74 /* FavoritesCoordinator.swift in Sources */,
 				74EAF6AA25D1C5D000F41122 /* ProfileCoordinator.swift in Sources */,
 				7487B034262A232100F25649 /* KeychainPassword.swift in Sources */,
 				742C785B2554618200B352FF /* ProfileHeaderView.swift in Sources */,

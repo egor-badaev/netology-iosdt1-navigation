@@ -21,6 +21,7 @@ final class MainCoordinator {
     func start() {
         setupFeedCoordinator()
         setupProfileCoordinator()
+        setupFavoritesCoordinator()
         setupTabBarController()
         rootWindow?.rootViewController = self.tabBarController
         rootWindow?.makeKeyAndVisible()
@@ -33,7 +34,7 @@ final class MainCoordinator {
         feedViewController.coordinator = feedCoordinator
         childCoordinators.append(feedCoordinator)
     }
-    
+
     private func setupProfileCoordinator() {
         let loginViewController = LogInViewController()
         let profileNavigationController = UINavigationController(rootViewController: loginViewController)
@@ -41,7 +42,15 @@ final class MainCoordinator {
         loginViewController.coordinator = profileCoordinator
         childCoordinators.append(profileCoordinator)
     }
-    
+
+    private func setupFavoritesCoordinator() {
+        let favoritesController = FavoritesViewController()
+        let favoritesNavigationController = UINavigationController(rootViewController: favoritesController)
+        let favoritesCoordinator = FavoritesCoordinator(navigationController: favoritesNavigationController)
+        favoritesController.coordinator = favoritesCoordinator
+        childCoordinators.append(favoritesCoordinator)
+    }
+
     private func setupTabBarController() {
         var tabBarViewControllers: [UIViewController] = []
         childCoordinators.forEach {
