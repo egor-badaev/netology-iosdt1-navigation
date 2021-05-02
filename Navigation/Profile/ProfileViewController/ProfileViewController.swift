@@ -33,7 +33,8 @@ class ProfileViewController: UIViewController {
     private lazy var tintView: UIView = {
         let tintView = UIView()
         tintView.backgroundColor = .black
-        tintView.layer.opacity = 0
+        tintView.alpha = 0
+        tintView.toAutoLayout()
 
         return tintView
     }()
@@ -41,8 +42,8 @@ class ProfileViewController: UIViewController {
     private lazy var closeView: UIButton = {
         let closeView = UIButton()
 
-        closeView.frame.size.width = 28
-        closeView.frame.size.height = 28
+        closeView.toAutoLayout()
+        closeView.alpha = 0
         closeView.setImage(#imageLiteral(resourceName: "close"), for: .normal)
         closeView.setImage(#imageLiteral(resourceName: "close").alpha(0.7), for: .selected)
         closeView.setImage(#imageLiteral(resourceName: "close").alpha(0.7), for: .highlighted)
@@ -55,26 +56,17 @@ class ProfileViewController: UIViewController {
 
     // MARK: - Properties
 
-    private var zoomedSize: CGFloat {
-        min(view.bounds.height, view.bounds.width)
-    }
-    private var zoomedAbsoluteFrame: CGRect {
-        CGRect(
-            x: self.view.bounds.width / 2 - self.zoomedSize / 2,
-            y: self.view.bounds.height / 2 - self.zoomedSize / 2,
-            width: self.zoomedSize,
-            height: self.zoomedSize
-        )
-    }
+    private var expandedConstraints = [NSLayoutConstraint]()
     private var isZoomed: Bool = false
-    private var originalAbsoluteFrame: CGRect {
-        let absoluteOriginX = postsTableView.frame.origin.x + headerView.frame.origin.x + headerView.avatarContainerView.frame.origin.x
-        let absoluteOriginY = postsTableView.frame.origin.y - postsTableView.contentOffset.y + headerView.frame.origin.y + headerView.avatarContainerView.frame.origin.y
 
-        return CGRect(x: absoluteOriginX, y: absoluteOriginY, width: headerView.avatarContainerView.bounds.width, height: headerView.avatarContainerView.bounds.height)
-
+    private var avatarOriginXAdjustment: CGFloat {
+        postsTableView.frame.origin.x + headerView.frame.origin.x + headerView.avatarContainerView.frame.origin.x
     }
-    
+    private var avatarOriginYAdjustment: CGFloat {
+        postsTableView.frame.origin.y - postsTableView.contentOffset.y + headerView.frame.origin.y + headerView.avatarContainerView.frame.origin.y
+    }
+
+
     private let imageProcessor = AsyncImageProcessor()
 
     // MARK: - Lifecycle
@@ -85,23 +77,6 @@ class ProfileViewController: UIViewController {
         setupUI()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        tintView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
-
-        closeView.frame = CGRect(
-            x: view.bounds.width - view.safeAreaInsets.right - AppConstants.margin - closeView.bounds.width,
-            y: view.safeAreaInsets.top + AppConstants.margin,
-            width: closeView.bounds.width,
-            height: closeView.bounds.height
-        )
-        
-        if isZoomed {
-            headerView.avatarImageView.frame = zoomedAbsoluteFrame
-        }
-    }
-
     // MARK: - Private methods
 
     private func setupUI() {
@@ -134,29 +109,61 @@ class ProfileViewController: UIViewController {
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+
+        guard expandedConstraints.isEmpty,
+              let window = view.window else { return }
+
+        window.addSubview(tintView)
+        window.addSubview(closeView)
+
+        let animationConstraints = [
+            tintView.topAnchor.constraint(equalTo: window.topAnchor),
+            tintView.bottomAnchor.constraint(equalTo: window.bottomAnchor),
+            tintView.leadingAnchor.constraint(equalTo: window.leadingAnchor),
+            tintView.trailingAnchor.constraint(equalTo: window.trailingAnchor),
+
+            closeView.topAnchor.constraint(equalTo: window.safeAreaLayoutGuide.topAnchor, constant: AppConstants.margin),
+            closeView.trailingAnchor.constraint(equalTo: window.safeAreaLayoutGuide.trailingAnchor, constant: -AppConstants.margin),
+            closeView.widthAnchor.constraint(equalToConstant: 28),
+            closeView.heightAnchor.constraint(equalToConstant: 28)
+        ]
+
+        NSLayoutConstraint.activate(animationConstraints)
+
+        expandedConstraints = [
+            headerView.avatarImageView.leadingAnchor.constraint(greaterThanOrEqualTo: window.leadingAnchor),
+            headerView.avatarImageView.trailingAnchor.constraint(lessThanOrEqualTo: window.trailingAnchor),
+            headerView.avatarImageView.topAnchor.constraint(greaterThanOrEqualTo: window.topAnchor),
+            headerView.avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: window.bottomAnchor),
+            headerView.avatarImageView.heightAnchor.constraint(equalTo: headerView.avatarImageView.widthAnchor),
+            headerView.avatarImageView.centerYAnchor.constraint(equalTo: window.centerYAnchor),
+            headerView.avatarImageView.centerXAnchor.constraint(equalTo: window.centerXAnchor)
+        ]
+    }
+
     @objc private func avatarTapped(_ sender: Any) {
         
         guard !isZoomed, let window = view.window else { return }
-        
-        window.addSubview(tintView)
+
+        window.addSubview(headerView.avatarImageView)
+
+        /// After changing superview, the frame stays the same
+        /// So, if the superview's origins differ, the view will jump from its position
+        /// To avoid this, we need manual origin correction
+        headerView.avatarImageView.frame.origin.x += avatarOriginXAdjustment
+        headerView.avatarImageView.frame.origin.y += avatarOriginYAdjustment
 
         NSLayoutConstraint.deactivate(headerView.avatarConstraints)
-        headerView.avatarImageView.removeFromSuperview()
-        headerView.avatarImageView.translatesAutoresizingMaskIntoConstraints = true
-        headerView.avatarImageView.frame = originalAbsoluteFrame
-        headerView.avatarImageView.isUserInteractionEnabled = false
-        window.addSubview(headerView.avatarImageView)
-        
-        closeView.layer.opacity = 0
-        window.addSubview(closeView)
-        
+        NSLayoutConstraint.activate(expandedConstraints)
+
         UIView.animate(withDuration: 0.5, animations: {
-            self.headerView.avatarImageView.frame = self.zoomedAbsoluteFrame
+            window.layoutIfNeeded()
             self.headerView.avatarImageView.layer.cornerRadius = 0
-            self.tintView.layer.opacity = 0.5
+            self.tintView.alpha = 0.5
         }) { _ in
             UIView.animate(withDuration: 0.3) {
-                self.closeView.layer.opacity = 1.0
+                self.closeView.alpha = 1.0
             } completion: { _ in
                 self.isZoomed = true
             }
@@ -168,21 +175,25 @@ class ProfileViewController: UIViewController {
         guard isZoomed else { return }
         
         UIView.animate(withDuration: 0.3) {
-            self.closeView.layer.opacity = 0
+            self.closeView.alpha = 0
+            self.tintView.alpha = 0
         } completion: { _ in
+            NSLayoutConstraint.deactivate(self.expandedConstraints)
+
+            self.headerView.avatarContainerView.addSubview(self.headerView.avatarImageView)
+
+            /// After changing superview, the frame stays the same
+            /// So, if the superview's origins differ, the view will jump from its position
+            /// To avoid this, we need manual origin correction
+            self.headerView.avatarImageView.frame.origin.x -= self.avatarOriginXAdjustment
+            self.headerView.avatarImageView.frame.origin.y -= self.avatarOriginYAdjustment
+
+            self.headerView.bringSubviewToFront(self.headerView.avatarContainerView)
+            NSLayoutConstraint.activate(self.headerView.avatarConstraints)
             UIView.animate(withDuration: 0.5) {
-                self.headerView.avatarImageView.frame = self.originalAbsoluteFrame
-                self.headerView.avatarImageView.layer.cornerRadius = self.originalAbsoluteFrame.width / 2
-                self.tintView.layer.opacity = 0
+                self.view.layoutIfNeeded()
+                self.headerView.avatarImageView.layer.cornerRadius = ProfileHeaderView.Config.avatarSize / 2
             } completion: { _ in
-                self.headerView.avatarImageView.removeFromSuperview()
-                self.headerView.avatarImageView.toAutoLayout()
-                self.headerView.avatarImageView.isUserInteractionEnabled = true
-                self.headerView.avatarContainerView.addSubview(self.headerView.avatarImageView)
-                NSLayoutConstraint.activate(self.headerView.avatarConstraints)
-                
-                self.closeView.removeFromSuperview()
-                self.tintView.removeFromSuperview()
                 self.isZoomed = false
             }
         }

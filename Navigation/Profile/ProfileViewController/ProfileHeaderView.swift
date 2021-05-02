@@ -12,7 +12,7 @@ class ProfileHeaderView: UIView {
 
     // MARK: - Constants
 
-    private enum Config {
+    enum Config {
         static let largeMargin: CGFloat = 27.0
         static let radius: CGFloat = 4.0
         static let avatarSize: CGFloat = 110.0
