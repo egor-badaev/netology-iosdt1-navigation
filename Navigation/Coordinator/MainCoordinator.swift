@@ -44,7 +44,8 @@ final class MainCoordinator {
     }
 
     private func setupFavoritesCoordinator() {
-        let favoritesController = FavoritesViewController()
+        let favoritesViewModel = FavoritesViewModel()
+        let favoritesController = FavoritesViewController(viewModel: favoritesViewModel)
         let favoritesNavigationController = UINavigationController(rootViewController: favoritesController)
         let favoritesCoordinator = FavoritesCoordinator(navigationController: favoritesNavigationController)
         favoritesController.coordinator = favoritesCoordinator

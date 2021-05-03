@@ -156,6 +156,23 @@ class ProfileViewController: BasePostsViewController {
             }
         }
     }
+
+    @objc private func saveFavoritePost(_ sender: Any) {
+        print(type(of: self), #function, sender)
+        guard let gestureRecognizer = sender as? UITapGestureRecognizer,
+              let cell = gestureRecognizer.view as? PostTableViewCell,
+              let postIdentifier = cell.representedIdentifier,
+              let post = Post.samplePosts.first(where: { $0.identifier == postIdentifier }) else {
+            return
+        }
+
+        let processedImage = imageProcessor.processedImage(forIdentifier: postIdentifier)
+        let favoritePost = FavoritesManager.shared.create(from: FavoritePost.self)
+        favoritePost.configure(with: post, image: processedImage)
+
+        FavoritesManager.shared.save()
+        cell.visualize(action: .addToFavorites)
+    }
     
 }
 
@@ -192,6 +209,11 @@ extension ProfileViewController: UITableViewDataSource {
                 return UITableViewCell()
             }
             let post = Post.samplePosts[indexPath.row]
+
+            let doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(saveFavoritePost(_:)))
+            doubleTapGestureRecognizer.numberOfTapsRequired = 2
+            cell.addGestureRecognizer(doubleTapGestureRecognizer)
+
             let identifier = post.identifier
             cell.representedIdentifier = identifier
             
@@ -199,7 +221,8 @@ extension ProfileViewController: UITableViewDataSource {
                 cell.configure(with: post, image: processedImage)
             } else {
                 cell.resetData()
-                
+                cell.configure(with: post, image: nil)
+
                 guard let sourceImage = UIImage(named: post.image) else {
                     return UITableViewCell()
                 }
