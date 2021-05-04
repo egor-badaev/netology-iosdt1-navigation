@@ -46,7 +46,15 @@ final class FavoritesViewModel: FavoritesViewControllerOutput {
         return post?.offset
     }
 
-    func reloadData() {
-        posts = FavoritesManager.shared.fetchData(for: FavoritePost.self)
+    func reloadData(completion: ((Bool, Error?) -> Void)?) {
+        FavoritesManager.shared.fetchDataAsync(for: FavoritePost.self) { [weak self] results, error in
+            guard let self = self else { return }
+            if let error = error {
+                completion?(false, error)
+                return
+            }
+            self.posts = results
+            completion?(true, nil)
+        }
     }
 }

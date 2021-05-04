@@ -14,7 +14,7 @@ protocol FavoritesViewControllerOutput {
     func image(for index: Int) -> UIImage
     func favoritePost(with identifier: Int) -> FavoritePost?
     func index(for identifier: Int) -> Int?
-    func reloadData()
+    func reloadData(completion: ((Bool, Error?) -> Void)?)
 }
 
 class FavoritesViewController: BasePostsViewController {
@@ -41,8 +41,18 @@ class FavoritesViewController: BasePostsViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.reloadData()
-        postsTableView.reloadData()
+        viewModel.reloadData { [weak self] success, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+
+            DispatchQueue.main.async {
+                self.postsTableView.reloadData()
+            }
+        }
     }
 
     @objc private func removeFavorite(_ sender: Any) {
@@ -53,11 +63,31 @@ class FavoritesViewController: BasePostsViewController {
               let index = viewModel.index(for: identifier) else {
             return
         }
-        FavoritesManager.shared.delete(object: favoritePost)
-        viewModel.reloadData()
-        let indexPath = IndexPath(row: index, section: 0)
-        cell.visualize(action: .deleteFromFavorites) { [weak self] in
-            self?.postsTableView.deleteRows(at: [indexPath], with: .top)
+        FavoritesManager.shared.deleteAsync(object: favoritePost) { [weak self] success, error in
+            guard let self = self else { return }
+
+            guard success else {
+                if let error = error {
+                    print(error.localizedDescription)
+                }
+                return
+            }
+
+            self.viewModel.reloadData { [weak self] success, error in
+                guard let self = self else { return }
+
+                if let error = error {
+                    print(error.localizedDescription)
+                    return
+                }
+                
+                let indexPath = IndexPath(row: index, section: 0)
+                DispatchQueue.main.async {
+                    cell.visualize(action: .deleteFromFavorites) { [weak self] in
+                        self?.postsTableView.deleteRows(at: [indexPath], with: .top)
+                    }
+                }
+            }
         }
     }
 }

@@ -167,10 +167,10 @@ class ProfileViewController: BasePostsViewController {
         }
 
         let processedImage = imageProcessor.processedImage(forIdentifier: postIdentifier)
-        let favoritePost = FavoritesManager.shared.create(from: FavoritePost.self)
+        let favoritePost = FavoritesManager.shared.create(from: FavoritePost.self, in: .background)
         favoritePost.configure(with: post, image: processedImage)
 
-        FavoritesManager.shared.save()
+        FavoritesManager.shared.saveAsync(completion: nil)
         cell.visualize(action: .addToFavorites)
     }
     
