@@ -11,6 +11,30 @@ import iOSIntPackage
 
 class PostTableViewCell: UITableViewCell {
     
+    enum ActionType {
+        case addToFavorites
+        case deleteFromFavorites
+
+        var backgroundColor: UIColor {
+            switch self {
+            case .addToFavorites:
+                return .systemGreen
+            case .deleteFromFavorites:
+                return .systemRed
+            }
+        }
+
+        var animationDuration: TimeInterval {
+            switch self {
+            case .addToFavorites:
+                return 1.0
+            case .deleteFromFavorites:
+                return 0.5
+            }
+        }
+
+    }
+
     // MARK: - Properties
     
     static let reuseIdentifier = "PostTableViewCell"
@@ -66,6 +90,14 @@ class PostTableViewCell: UITableViewCell {
         return ai
     }()
 
+    private let defaultBackgroundColor: UIColor = {
+        if #available(iOS 13.0, *) {
+            return .systemBackground
+        } else {
+            return .white
+        }
+    }()
+
     // MARK: - Lyfecycle
     
     required init?(coder: NSCoder) {
@@ -116,14 +148,16 @@ class PostTableViewCell: UITableViewCell {
         showActivity()
     }
     
-    func configure(with post: Post, image: UIImage) {
+    func configure(with post: Post, image: UIImage?) {
         representedIdentifier = post.identifier
         authorLabel.text = post.author
-        postImageView.image = image
         descriptionLabel.text = post.description
         likesLabel.text = "Likes: \(post.likes)"
         viewsLabel.text = "Views: \(post.views)"
-        hideActivity()
+        if let image = image {
+            postImageView.image = image
+            hideActivity()
+        }
     }
     
     func resetData() {
@@ -133,6 +167,17 @@ class PostTableViewCell: UITableViewCell {
         likesLabel.text = nil
         viewsLabel.text = nil
         showActivity()
+    }
+
+    func visualize(action: PostTableViewCell.ActionType, completion: (() -> Void)? = nil) {
+        contentView.backgroundColor = action.backgroundColor
+
+        UIView.animate(withDuration: action.animationDuration) {
+            self.contentView.backgroundColor = self.defaultBackgroundColor
+        } completion: { _ in
+            completion?()
+        }
+
     }
     
     // MARK: - Private functions

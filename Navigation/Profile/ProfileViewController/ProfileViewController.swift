@@ -8,26 +8,12 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController {
-    
+class ProfileViewController: BasePostsViewController {
+
     weak var coordinator: ProfileCoordinator?
-    
+
     //MARK: - Subviews
-    
-    private lazy var postsTableView: UITableView = {
-        let tableView = UITableView()
-        
-        tableView.toAutoLayout()
-        
-        tableView.register(PostTableViewCell.self, forCellReuseIdentifier: PostTableViewCell.reuseIdentifier)
-        tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: PhotosTableViewCell.reuseIdentifier)
-        
-        tableView.dataSource = self
-        tableView.delegate = self
-        
-        return tableView
-    }()
-    
+
     private let headerView = ProfileHeaderView()
 
     private lazy var tintView: UIView = {
@@ -82,7 +68,8 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupUI()
+        configureViews()
+        configureTableView(dataSource: self, delegate: self)
     }
     
     override func viewDidLayoutSubviews() {
@@ -104,26 +91,8 @@ class ProfileViewController: UIViewController {
 
     // MARK: - Private methods
 
-    private func setupUI() {
+    private func configureViews() {
         
-        if #available(iOS 13.0, *) {
-            view.backgroundColor = .systemBackground
-        } else {
-            // Fallback on earlier versions
-            view.backgroundColor = .white
-        }
-        
-        view.addSubview(postsTableView)
-        
-        let constraints = [
-            postsTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            postsTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            postsTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            postsTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ]
-        
-        NSLayoutConstraint.activate(constraints)
-
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(avatarTapped(_:)))
         headerView.avatarImageView.isUserInteractionEnabled = true
         headerView.avatarImageView.addGestureRecognizer(tapGestureRecognizer)
@@ -187,6 +156,23 @@ class ProfileViewController: UIViewController {
             }
         }
     }
+
+    @objc private func saveFavoritePost(_ sender: Any) {
+        print(type(of: self), #function, sender)
+        guard let gestureRecognizer = sender as? UITapGestureRecognizer,
+              let cell = gestureRecognizer.view as? PostTableViewCell,
+              let postIdentifier = cell.representedIdentifier,
+              let post = Post.samplePosts.first(where: { $0.identifier == postIdentifier }) else {
+            return
+        }
+
+        let processedImage = imageProcessor.processedImage(forIdentifier: postIdentifier)
+        let favoritePost = FavoritesManager.shared.create(from: FavoritePost.self)
+        favoritePost.configure(with: post, image: processedImage)
+
+        FavoritesManager.shared.save()
+        cell.visualize(action: .addToFavorites)
+    }
     
 }
 
@@ -223,6 +209,11 @@ extension ProfileViewController: UITableViewDataSource {
                 return UITableViewCell()
             }
             let post = Post.samplePosts[indexPath.row]
+
+            let doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(saveFavoritePost(_:)))
+            doubleTapGestureRecognizer.numberOfTapsRequired = 2
+            cell.addGestureRecognizer(doubleTapGestureRecognizer)
+
             let identifier = post.identifier
             cell.representedIdentifier = identifier
             
@@ -230,7 +221,8 @@ extension ProfileViewController: UITableViewDataSource {
                 cell.configure(with: post, image: processedImage)
             } else {
                 cell.resetData()
-                
+                cell.configure(with: post, image: nil)
+
                 guard let sourceImage = UIImage(named: post.image) else {
                     return UITableViewCell()
                 }

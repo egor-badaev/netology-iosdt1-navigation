@@ -8,17 +8,10 @@
 
 import UIKit
 
-final class FeedCoordinator: Coordinator {
-    var childCoordinators: [Coordinator]    
-    var navigationController: UINavigationController
+final class FeedCoordinator: BaseCoordinator {
     var selectedPostIndex: Int?
     
-    init(navigationController: UINavigationController) {
-        childCoordinators = []
-        self.navigationController = navigationController
-    }
-    
-    func start() {
+    override func start() {
         let feedTabBarIcon = UIImage(named: "Home")
         let feedTabBarItem = UITabBarItem(title: AppConstants.feedViewControllerTitle, image: feedTabBarIcon, selectedImage: nil)
         navigationController.tabBarItem = feedTabBarItem

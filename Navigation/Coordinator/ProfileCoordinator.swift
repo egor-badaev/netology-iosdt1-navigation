@@ -8,16 +8,9 @@
 
 import UIKit
 
-final class ProfileCoordinator: Coordinator {
-    var childCoordinators: [Coordinator]
-    var navigationController: UINavigationController
-    
-    init(navigationController: UINavigationController) {
-        childCoordinators = []
-        self.navigationController = navigationController
-    }
-        
-    func start() {
+final class ProfileCoordinator: BaseCoordinator {
+
+    override func start() {
         let profileTabBarIcon = UIImage(named: "Profile")
         let profileTabBarItem = UITabBarItem(title: "Profile", image: profileTabBarIcon, selectedImage: nil)
         navigationController.tabBarItem = profileTabBarItem
