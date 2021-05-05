@@ -12,8 +12,7 @@ protocol FavoritesViewControllerOutput {
     var numberOfRows: Int { get }
     func post(for index: Int) -> Post
     func image(for index: Int) -> UIImage
-    func favoritePost(with identifier: Int) -> FavoritePost?
-    func index(for identifier: Int) -> Int?
+    func favoritePost(for index: Int) -> FavoritePost?
     func reloadData(completion: ((Bool, Error?) -> Void)?)
 }
 
@@ -36,7 +35,7 @@ class FavoritesViewController: BasePostsViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Favorites"
-        configureTableView(dataSource: self)
+        configureTableView(dataSource: self, delegate: self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -51,42 +50,6 @@ class FavoritesViewController: BasePostsViewController {
 
             DispatchQueue.main.async {
                 self.postsTableView.reloadData()
-            }
-        }
-    }
-
-    @objc private func removeFavorite(_ sender: Any) {
-        guard let recognizer = sender as? UITapGestureRecognizer,
-              let cell = recognizer.view as? PostTableViewCell,
-              let identifier = cell.representedIdentifier,
-              let favoritePost = viewModel.favoritePost(with: identifier),
-              let index = viewModel.index(for: identifier) else {
-            return
-        }
-        FavoritesManager.shared.deleteAsync(object: favoritePost) { [weak self] success, error in
-            guard let self = self else { return }
-
-            guard success else {
-                if let error = error {
-                    print(error.localizedDescription)
-                }
-                return
-            }
-
-            self.viewModel.reloadData { [weak self] success, error in
-                guard let self = self else { return }
-
-                if let error = error {
-                    print(error.localizedDescription)
-                    return
-                }
-                
-                let indexPath = IndexPath(row: index, section: 0)
-                DispatchQueue.main.async {
-                    cell.visualize(action: .deleteFromFavorites) { [weak self] in
-                        self?.postsTableView.deleteRows(at: [indexPath], with: .top)
-                    }
-                }
             }
         }
     }
@@ -108,10 +71,42 @@ extension FavoritesViewController: UITableViewDataSource {
         let image = viewModel.image(for: indexPath.row)
         cell.configure(with: post, image: image)
 
-        let doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(removeFavorite(_:)))
-        doubleTapGestureRecognizer.numberOfTapsRequired = 2
-        cell.addGestureRecognizer(doubleTapGestureRecognizer)
-
         return cell
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension FavoritesViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Remove from favorites") { [weak self] _, _, _ in
+            guard let self = self,
+                  let favoritePost = self.viewModel.favoritePost(for: indexPath.row) else { return }
+            FavoritesManager.shared.deleteAsync(object: favoritePost) { [weak self] success, error in
+                guard let self = self else { return }
+
+                guard success else {
+                    if let error = error {
+                        print(error.localizedDescription)
+                    }
+                    return
+                }
+
+                self.viewModel.reloadData { [weak self] success, error in
+                    guard let self = self else { return }
+
+                    if let error = error {
+                        print(error.localizedDescription)
+                        return
+                    }
+
+                    DispatchQueue.main.async {
+                        self.postsTableView.deleteRows(at: [indexPath], with: .top)
+                    }
+                }
+            }
+        }
+        deleteAction.image = UIImage(named: "xmark.bin.circle")
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return configuration
     }
 }

@@ -37,13 +37,11 @@ final class FavoritesViewModel: FavoritesViewControllerOutput {
         return image
     }
 
-    func favoritePost(with identifier: Int) -> FavoritePost? {
-        return posts.first { $0.identifier == Int32(identifier) }
-    }
-
-    func index(for identifier: Int) -> Int? {
-        let post = posts.enumerated().first { $0.element.identifier == Int32(identifier) }
-        return post?.offset
+    func favoritePost(for index: Int) -> FavoritePost? {
+        guard posts.indices.contains(index) else {
+            return nil
+        }
+        return posts[index]
     }
 
     func reloadData(completion: ((Bool, Error?) -> Void)?) {
