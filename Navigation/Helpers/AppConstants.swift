@@ -21,4 +21,5 @@ enum AppConstants {
     static let feedViewControllerTitle = "Feed"
     static let animationDuration: TimeInterval = 0.3
     static let authenticationProvider: AuthenticationProvider = .realm
+    static let stringTransformer = "Latin; Lower"
 }

@@ -15,7 +15,12 @@ public class FavoritePost: NSManagedObject {
 
     func configure(with post: Post, image: UIImage? = nil) {
         self.identifier = Int32(post.identifier)
-        self.author = post.author
+
+        let author = post.author
+        self.author = author
+        let authorTransformer = StringTransform(AppConstants.stringTransformer)
+        self.normalizedAuthor = author.applyingTransform(authorTransformer, reverse: false)
+
         self.postDescription = post.description
         self.likes = Int16(post.likes)
         self.views = Int16(post.views)

@@ -18,6 +18,7 @@ extension FavoritePost {
     }
 
     @NSManaged public var identifier: Int32
+    @NSManaged public var normalizedAuthor: String?
     @NSManaged public var author: String?
     @NSManaged public var postDescription: String?
     @NSManaged public var image: Data?

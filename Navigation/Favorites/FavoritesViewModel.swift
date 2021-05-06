@@ -14,7 +14,7 @@ final class FavoritesViewModel: FavoritesViewControllerOutput {
         posts.count
     }
 
-    private var posts = [FavoritePost]()
+    private lazy var posts = [FavoritePost]()
     private var filter: String?
 
     func post(for index: Int) -> Post {
@@ -48,9 +48,10 @@ final class FavoritesViewModel: FavoritesViewControllerOutput {
     func reloadData(completion: ((Bool, Error?) -> Void)?) {
         let predicate: NSPredicate?
 
-        if let filter = filter {
-            let name = "author"
-            let value = "\(filter)*"
+        if let filter = filter,
+           let normalizedFilter = filter.applyingTransform(StringTransform(AppConstants.stringTransformer), reverse: false) {
+            let name = "normalizedAuthor"
+            let value = "\(normalizedFilter)*"
             predicate = NSPredicate(format: "%K like %@", name, value)
         } else {
             predicate = nil
