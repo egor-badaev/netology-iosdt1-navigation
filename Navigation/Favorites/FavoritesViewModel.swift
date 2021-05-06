@@ -15,6 +15,7 @@ final class FavoritesViewModel: FavoritesViewControllerOutput {
     }
 
     private var posts = [FavoritePost]()
+    private var filter: String?
 
     func post(for index: Int) -> Post {
         let favoritePost = posts[index]
@@ -45,7 +46,17 @@ final class FavoritesViewModel: FavoritesViewControllerOutput {
     }
 
     func reloadData(completion: ((Bool, Error?) -> Void)?) {
-        FavoritesManager.shared.fetchDataAsync(for: FavoritePost.self) { [weak self] results, error in
+        let predicate: NSPredicate?
+
+        if let filter = filter {
+            let name = "author"
+            let value = "\(filter)*"
+            predicate = NSPredicate(format: "%K like %@", name, value)
+        } else {
+            predicate = nil
+        }
+
+        FavoritesManager.shared.fetchDataAsync(for: FavoritePost.self, with: predicate) { [weak self] results, error in
             guard let self = self else { return }
             if let error = error {
                 completion?(false, error)
@@ -55,4 +66,40 @@ final class FavoritesViewModel: FavoritesViewControllerOutput {
             completion?(true, nil)
         }
     }
+
+    func setFilter(_ filter: String, completion: @escaping FilterHandler) {
+        filterData(using: filter, completion: completion)
+    }
+
+    func clearFilter(completion: @escaping FilterHandler) {
+        filterData(using: nil, completion: completion)
+    }
+
+    private func filterData(using filter: String?, completion: @escaping FilterHandler) {
+        let initialData = posts
+        self.filter = filter
+        self.reloadData { [weak self] success, error in
+            guard let self = self else {
+                completion(nil, nil)
+                return
+            }
+            guard success else {
+                if let error = error {
+                    print(error.localizedDescription)
+                }
+                completion(nil, error)
+                return
+            }
+
+            let newData = self.posts
+
+            let (addedIndexes, deletedIndexes) = Array<FavoritePost>.getChangedIndexes(initial: initialData, updated: newData)
+
+            let changes = FilterChanges(added: addedIndexes, deleted: deletedIndexes)
+
+            completion(changes, nil)
+
+        }
+    }
+
 }

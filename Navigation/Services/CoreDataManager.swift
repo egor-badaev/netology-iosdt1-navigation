@@ -123,10 +123,14 @@ class CoreDataManager {
         }
     }
 
-    func fetchDataAsync<T: NSManagedObject> (for entity: T.Type, with completion: @escaping ([T], Error?) -> Void) {
+    func fetchDataAsync<T: NSManagedObject> (for entity: T.Type, with predicate: NSPredicate? = nil, completion: @escaping ([T], Error?) -> Void) {
         guard let request = entity.fetchRequest() as? NSFetchRequest<T> else {
             completion([], CoreDataManagerError.fetchRequestError)
             return
+        }
+
+        if let predicate = predicate {
+            request.predicate = predicate
         }
 
         backgroundContext.perform { [weak self] in

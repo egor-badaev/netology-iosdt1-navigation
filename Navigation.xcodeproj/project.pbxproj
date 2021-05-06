@@ -56,6 +56,7 @@
 		74756D6A2563DB87001D5099 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74756D692563DB87001D5099 /* AppConstants.swift */; };
 		74756D6D2563E6FE001D5099 /* InputTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74756D6C2563E6FE001D5099 /* InputTextField.swift */; };
 		747887DB2640839500B944BB /* FavoritesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 747887DA2640839500B944BB /* FavoritesManager.swift */; };
+		747D73A2264406D400A9AA20 /* ArrayExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 747D73A1264406D400A9AA20 /* ArrayExtensions.swift */; };
 		7484DA522613A333002CCD1C /* ToDoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7484DA512613A333002CCD1C /* ToDoModel.swift */; };
 		7487B021262A186500F25649 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7487B020262A186500F25649 /* AuthenticationManager.swift */; };
 		7487B034262A232100F25649 /* KeychainPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7487B033262A232100F25649 /* KeychainPassword.swift */; };
@@ -129,6 +130,7 @@
 		74756D692563DB87001D5099 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		74756D6C2563E6FE001D5099 /* InputTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextField.swift; sourceTree = "<group>"; };
 		747887DA2640839500B944BB /* FavoritesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesManager.swift; sourceTree = "<group>"; };
+		747D73A1264406D400A9AA20 /* ArrayExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtensions.swift; sourceTree = "<group>"; };
 		7484DA512613A333002CCD1C /* ToDoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoModel.swift; sourceTree = "<group>"; };
 		7487B020262A186500F25649 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		7487B033262A232100F25649 /* KeychainPassword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainPassword.swift; sourceTree = "<group>"; };
@@ -323,6 +325,7 @@
 			children = (
 				74756D692563DB87001D5099 /* AppConstants.swift */,
 				7429E59B26124F36000DA30E /* AppConfiguration.swift */,
+				747D73A1264406D400A9AA20 /* ArrayExtensions.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -611,6 +614,7 @@
 				746B9E97263F391900C43A74 /* FavoritesViewController.swift in Sources */,
 				74A7A16625CDB4DA005D12DE /* PostWrapperView.swift in Sources */,
 				74EAF6A325D1C38700F41122 /* Coordinator.swift in Sources */,
+				747D73A2264406D400A9AA20 /* ArrayExtensions.swift in Sources */,
 				7429E59C26124F36000DA30E /* AppConfiguration.swift in Sources */,
 				74ADA31D26334094005960A0 /* MediaViewController.swift in Sources */,
 				746B9E9B263F3A4900C43A74 /* BaseCoordinator.swift in Sources */,
