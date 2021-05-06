@@ -14,7 +14,7 @@ protocol FavoritesViewControllerOutput {
 
     var numberOfRows: Int { get }
     func post(for index: Int) -> Post
-    func image(for index: Int) -> UIImage
+    func loadImage(for index: Int, completion: @escaping (UIImage) -> Void)
     func favoritePost(for index: Int) -> FavoritePost?
     func reloadData(completion: ((Bool, Error?) -> Void)?)
     func setFilter(_ filter: String, completion: @escaping FilterHandler)
@@ -142,8 +142,18 @@ extension FavoritesViewController: UITableViewDataSource {
         }
 
         let post = viewModel.post(for: indexPath.row)
-        let image = viewModel.image(for: indexPath.row)
-        cell.configure(with: post, image: image)
+
+        cell.configure(with: post, image: nil)
+        let identifier = cell.representedIdentifier
+
+        viewModel.loadImage(for: indexPath.row) { image in
+            guard cell.representedIdentifier == identifier else {
+                return
+            }
+            DispatchQueue.main.async {
+                cell.configure(with: post, image: image)
+            }
+        }
 
         return cell
     }

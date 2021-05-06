@@ -3,7 +3,7 @@
     <entity name="FavoritePost" representedClassName="FavoritePost" syncable="YES">
         <attribute name="author" attributeType="String" defaultValueString=""/>
         <attribute name="identifier" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="image" attributeType="Binary"/>
+        <attribute name="image" attributeType="String"/>
         <attribute name="likes" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="normalizedAuthor" attributeType="String" defaultValueString=""/>
         <attribute name="postDescription" attributeType="String" defaultValueString=""/>

@@ -32,7 +32,9 @@ public class FavoritePost: NSManagedObject {
         } else if let image = UIImage(named: post.image) {
             postImage = image
         }
-        self.image = postImage.pngData()
+
+        let imageURL = ImageCacheService.shared.cachedFilename(for: postImage)
+        self.image = imageURL
     }
 
 }

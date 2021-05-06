@@ -29,13 +29,16 @@ final class FavoritesViewModel: FavoritesViewControllerOutput {
         return post
     }
 
-    func image(for index: Int) -> UIImage {
+    func loadImage(for index: Int, completion: @escaping (UIImage) -> Void) {
         let favoritePost = posts[index]
-        guard let data = favoritePost.image,
-              let image = UIImage(data: data) else {
-            return UIImage()
+        DispatchQueue.global().async {
+            guard let cacheFilename = favoritePost.image,
+                  let image = ImageCacheService.shared.image(filename: cacheFilename) else {
+                completion(UIImage())
+                return
+            }
+            completion(image)
         }
-        return image
     }
 
     func favoritePost(for index: Int) -> FavoritePost? {
