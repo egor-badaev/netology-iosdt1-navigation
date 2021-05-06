@@ -9,18 +9,23 @@
 import UIKit
 
 protocol FavoritesViewControllerOutput {
+    typealias FilterChanges = (added: Set<Int>, deleted: Set<Int>)
+    typealias FilterHandler = (FilterChanges?, Error?) -> Void
+
     var numberOfRows: Int { get }
     func post(for index: Int) -> Post
-    func image(for index: Int) -> UIImage
-    func favoritePost(with identifier: Int) -> FavoritePost?
-    func index(for identifier: Int) -> Int?
-    func reloadData()
+    func loadImage(for index: Int, completion: @escaping (UIImage) -> Void)
+    func favoritePost(for index: Int) -> FavoritePost?
+    func reloadData(completion: ((Bool, Error?) -> Void)?)
+    func setFilter(_ filter: String, completion: @escaping FilterHandler)
+    func clearFilter(completion: @escaping FilterHandler)
 }
 
 class FavoritesViewController: BasePostsViewController {
 
     weak var coordinator: FavoritesCoordinator?
     private let viewModel: FavoritesViewControllerOutput
+    private var filterText: String?
 
     // MARK: - Life cycle
 
@@ -35,30 +40,92 @@ class FavoritesViewController: BasePostsViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         title = "Favorites"
-        configureTableView(dataSource: self)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Clear filter", style: .plain, target: self, action: #selector(clearFiltersTapped(_:)))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter author", style: .plain, target: self, action: #selector(addFilterTapped(_:)))
+
+        configureTableView(dataSource: self, delegate: self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.reloadData()
-        postsTableView.reloadData()
+        viewModel.reloadData { [weak self] success, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+
+            DispatchQueue.main.async {
+                self.postsTableView.reloadData()
+            }
+        }
     }
 
-    @objc private func removeFavorite(_ sender: Any) {
-        guard let recognizer = sender as? UITapGestureRecognizer,
-              let cell = recognizer.view as? PostTableViewCell,
-              let identifier = cell.representedIdentifier,
-              let favoritePost = viewModel.favoritePost(with: identifier),
-              let index = viewModel.index(for: identifier) else {
+    // MARK: - Actions
+
+    @objc func addFilterTapped(_ sender: UIBarButtonItem) {
+
+        let alert = UIAlertController(title: "Add filter by author", message: "Display only posts made by certain author", preferredStyle: .alert)
+        alert.addTextField { textfield in
+            textfield.addTarget(self, action: #selector(self.filterTextEntered(_:)), for: .editingChanged)
+        }
+        let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            guard let self = self,
+                  let filterText = self.filterText,
+                  filterText.count > 0 else {
+                return
+            }
+            self.viewModel.setFilter(filterText) { [weak self] changes, error in
+                guard let self = self else { return }
+                self.updateTable(changes: changes, error: error)
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+
+        [okAction, cancelAction].forEach { alert.addAction($0) }
+
+        coordinator?.navigationController.present(alert, animated: true, completion: nil)
+    }
+
+    @objc func filterTextEntered(_ sender: UITextField) {
+        filterText = sender.text
+    }
+
+    @objc func clearFiltersTapped(_ sender: UIBarButtonItem) {
+        viewModel.clearFilter { [weak self] changes, error in
+            guard let self = self else { return }
+            self.updateTable(changes: changes, error: error)
+        }
+    }
+
+    // MARK: - Helpers
+    private func updateTable(changes: FavoritesViewControllerOutput.FilterChanges?, error: Error?) {
+
+        guard let changes = changes else {
+            if let error = error {
+                print(error.localizedDescription)
+            }
             return
         }
-        FavoritesManager.shared.delete(object: favoritePost)
-        viewModel.reloadData()
-        let indexPath = IndexPath(row: index, section: 0)
-        cell.visualize(action: .deleteFromFavorites) { [weak self] in
-            self?.postsTableView.deleteRows(at: [indexPath], with: .top)
+
+        DispatchQueue.main.async {
+            self.postsTableView.performBatchUpdates {
+                if changes.deleted.count > 0 {
+                    let deleteIndexes = changes.deleted.map { IndexPath(row: $0, section: 0) }
+                    self.postsTableView.deleteRows(at: deleteIndexes, with: .automatic)
+                }
+                if changes.added.count > 0 {
+                    let insertIndexes = changes.added.map { IndexPath(row: $0, section: 0) }
+                    self.postsTableView.insertRows(at: insertIndexes, with: .automatic)
+                }
+            } completion: { _ in
+                print("Updates complete")
+            }
         }
+
     }
 }
 
@@ -75,13 +142,55 @@ extension FavoritesViewController: UITableViewDataSource {
         }
 
         let post = viewModel.post(for: indexPath.row)
-        let image = viewModel.image(for: indexPath.row)
-        cell.configure(with: post, image: image)
 
-        let doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(removeFavorite(_:)))
-        doubleTapGestureRecognizer.numberOfTapsRequired = 2
-        cell.addGestureRecognizer(doubleTapGestureRecognizer)
+        cell.configure(with: post, image: nil)
+        let identifier = cell.representedIdentifier
+
+        viewModel.loadImage(for: indexPath.row) { image in
+            guard cell.representedIdentifier == identifier else {
+                return
+            }
+            DispatchQueue.main.async {
+                cell.configure(with: post, image: image)
+            }
+        }
 
         return cell
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension FavoritesViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Remove from favorites") { [weak self] _, _, _ in
+            guard let self = self,
+                  let favoritePost = self.viewModel.favoritePost(for: indexPath.row) else { return }
+            FavoritesManager.shared.deleteAsync(object: favoritePost) { [weak self] success, error in
+                guard let self = self else { return }
+
+                guard success else {
+                    if let error = error {
+                        print(error.localizedDescription)
+                    }
+                    return
+                }
+
+                self.viewModel.reloadData { [weak self] success, error in
+                    guard let self = self else { return }
+
+                    if let error = error {
+                        print(error.localizedDescription)
+                        return
+                    }
+
+                    DispatchQueue.main.async {
+                        self.postsTableView.deleteRows(at: [indexPath], with: .top)
+                    }
+                }
+            }
+        }
+        deleteAction.image = UIImage(named: "xmark.bin.circle")
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return configuration
     }
 }

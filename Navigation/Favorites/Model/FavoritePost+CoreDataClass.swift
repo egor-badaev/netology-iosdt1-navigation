@@ -15,7 +15,12 @@ public class FavoritePost: NSManagedObject {
 
     func configure(with post: Post, image: UIImage? = nil) {
         self.identifier = Int32(post.identifier)
-        self.author = post.author
+
+        let author = post.author
+        self.author = author
+        let authorTransformer = StringTransform(AppConstants.stringTransformer)
+        self.normalizedAuthor = author.applyingTransform(authorTransformer, reverse: false)
+
         self.postDescription = post.description
         self.likes = Int16(post.likes)
         self.views = Int16(post.views)
@@ -27,7 +32,9 @@ public class FavoritePost: NSManagedObject {
         } else if let image = UIImage(named: post.image) {
             postImage = image
         }
-        self.image = postImage.pngData()
+
+        let imageURL = ImageCacheService.shared.cachedFilename(for: postImage)
+        self.image = imageURL
     }
 
 }
