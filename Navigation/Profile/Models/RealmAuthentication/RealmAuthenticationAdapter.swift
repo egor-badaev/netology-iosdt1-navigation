@@ -51,7 +51,9 @@ class RealmAuthenticationAdapter {
 
     // MARK: - Initializer
     private init() {
-        realm = try? Realm()
+        let key = RealmEncryption.manager.encryptionKey
+        let config = Realm.Configuration(encryptionKey: key)
+        realm = try? Realm(configuration: config)
     }
 
     // MARK: - Public methods
