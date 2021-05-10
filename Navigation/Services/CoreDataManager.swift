@@ -142,6 +142,23 @@ class CoreDataManager {
                 completion([], error)
             }
         }
+    }
 
+    func makeFetchedResultsController<T: NSManagedObject> (for entity: T.Type, in contextType: ContextType, sortingBy sortDescriptor: NSSortDescriptor, with predicate: NSPredicate?) -> NSFetchedResultsController<NSFetchRequestResult> {
+
+        let fetchRequest = entity.fetchRequest()
+        fetchRequest.sortDescriptors = [sortDescriptor]
+
+        let context: NSManagedObjectContext
+        switch contextType {
+        case .main:
+            context = self.context
+        case .background:
+            context = backgroundContext
+        }
+        
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+
+        return fetchedResultsController
     }
 }
