@@ -18,7 +18,7 @@ final class FavoritesManager: CoreDataManager {
 
     private override init(model: String) {
         super.init(model: model)
-        persistentStoreContainer.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         backgroundContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
     }
 }

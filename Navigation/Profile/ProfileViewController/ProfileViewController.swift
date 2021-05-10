@@ -158,7 +158,7 @@ class ProfileViewController: BasePostsViewController {
     }
 
     @objc private func saveFavoritePost(_ sender: Any) {
-        print(type(of: self), #function, sender)
+
         guard let gestureRecognizer = sender as? UITapGestureRecognizer,
               let cell = gestureRecognizer.view as? PostTableViewCell,
               let postIdentifier = cell.representedIdentifier,

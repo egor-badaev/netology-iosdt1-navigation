@@ -9,16 +9,30 @@
 import UIKit
 
 protocol FavoritesViewControllerOutput {
-    typealias FilterChanges = (added: Set<Int>, deleted: Set<Int>)
-    typealias FilterHandler = (FilterChanges?, Error?) -> Void
+    typealias Changeset = (added: Set<Int>, deleted: Set<Int>)
+    typealias UpdatesHandler = (Changeset?, Error?) -> Void
 
     var numberOfRows: Int { get }
-    func post(for index: Int) -> Post
-    func loadImage(for index: Int, completion: @escaping (UIImage) -> Void)
-    func favoritePost(for index: Int) -> FavoritePost?
+    func post(for indexPath: IndexPath) -> Post
+    func loadImage(for indexPath: IndexPath, completion: @escaping (UIImage?) -> Void)
+    func favoritePost(for indexPath: IndexPath) -> FavoritePost
     func reloadData(completion: ((Bool, Error?) -> Void)?)
-    func setFilter(_ filter: String, completion: @escaping FilterHandler)
-    func clearFilter(completion: @escaping FilterHandler)
+    func setFilter(_ filter: String, completion: @escaping UpdatesHandler)
+    func clearFilter(completion: @escaping UpdatesHandler)
+}
+
+enum RowAction {
+    case add
+    case delete
+    case move(IndexPath)
+    case redraw
+}
+
+protocol FavoritesViewControllerInput: AnyObject {
+
+    func willUpdate()
+    func updateRow(at indexPath: IndexPath, action: RowAction)
+    func didUpdate()
 }
 
 class FavoritesViewController: BasePostsViewController {
@@ -26,6 +40,7 @@ class FavoritesViewController: BasePostsViewController {
     weak var coordinator: FavoritesCoordinator?
     private let viewModel: FavoritesViewControllerOutput
     private var filterText: String?
+    private var hasPendingUpdates = false
 
     // MARK: - Life cycle
 
@@ -46,21 +61,29 @@ class FavoritesViewController: BasePostsViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter author", style: .plain, target: self, action: #selector(addFilterTapped(_:)))
 
         configureTableView(dataSource: self, delegate: self)
-    }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         viewModel.reloadData { [weak self] success, error in
             guard let self = self else { return }
 
-            if let error = error {
-                print(error.localizedDescription)
+            guard success else {
+                if let error = error {
+                    print(error.localizedDescription)
+                }
                 return
             }
 
             DispatchQueue.main.async {
                 self.postsTableView.reloadData()
             }
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if hasPendingUpdates {
+            postsTableView.reloadData()
+            hasPendingUpdates = false
         }
     }
 
@@ -102,7 +125,7 @@ class FavoritesViewController: BasePostsViewController {
     }
 
     // MARK: - Helpers
-    private func updateTable(changes: FavoritesViewControllerOutput.FilterChanges?, error: Error?) {
+    private func updateTable(changes: FavoritesViewControllerOutput.Changeset?, error: Error?) {
 
         guard let changes = changes else {
             if let error = error {
@@ -141,12 +164,12 @@ extension FavoritesViewController: UITableViewDataSource {
             return UITableViewCell()
         }
 
-        let post = viewModel.post(for: indexPath.row)
+        let post = viewModel.post(for: indexPath)
 
         cell.configure(with: post, image: nil)
         let identifier = cell.representedIdentifier
 
-        viewModel.loadImage(for: indexPath.row) { image in
+        viewModel.loadImage(for: indexPath) { image in
             guard cell.representedIdentifier == identifier else {
                 return
             }
@@ -163,34 +186,58 @@ extension FavoritesViewController: UITableViewDataSource {
 extension FavoritesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "Remove from favorites") { [weak self] _, _, _ in
-            guard let self = self,
-                  let favoritePost = self.viewModel.favoritePost(for: indexPath.row) else { return }
-            FavoritesManager.shared.deleteAsync(object: favoritePost) { [weak self] success, error in
-                guard let self = self else { return }
-
-                guard success else {
-                    if let error = error {
-                        print(error.localizedDescription)
-                    }
-                    return
-                }
-
-                self.viewModel.reloadData { [weak self] success, error in
-                    guard let self = self else { return }
-
-                    if let error = error {
-                        print(error.localizedDescription)
-                        return
-                    }
-
-                    DispatchQueue.main.async {
-                        self.postsTableView.deleteRows(at: [indexPath], with: .top)
-                    }
-                }
-            }
+            guard let self = self else { return }
+            let favoritePost = self.viewModel.favoritePost(for: indexPath)
+            FavoritesManager.shared.deleteAsync(object: favoritePost, with: nil)
         }
         deleteAction.image = UIImage(named: "xmark.bin.circle")
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
         return configuration
+    }
+}
+
+extension FavoritesViewController: FavoritesViewControllerInput {
+    func willUpdate() {
+        handleBackgroundUpdates { [weak self] in
+            self?.postsTableView.beginUpdates()
+        }
+    }
+
+    func updateRow(at indexPath: IndexPath, action: RowAction) {
+
+        handleBackgroundUpdates { [weak self] in
+            switch action {
+            case .add:
+                self?.postsTableView.insertRows(at: [indexPath], with: .automatic)
+            case .delete:
+                self?.postsTableView.deleteRows(at: [indexPath], with: .automatic)
+            case .move(let newIndexPath):
+                self?.postsTableView.moveRow(at: indexPath, to: newIndexPath)
+            case .redraw:
+                self?.postsTableView.reloadRows(at: [indexPath], with: .automatic)
+            }
+        }
+    }
+
+    func didUpdate() {
+        handleBackgroundUpdates { [weak self] in
+            self?.postsTableView.endUpdates()
+        }
+    }
+
+    private func handleBackgroundUpdates(handler: @escaping () -> Void) {
+        DispatchQueue.main.async { [weak self] in
+
+            guard let self = self else { return }
+
+            // check if view is in hierarchy
+            guard let _ = self.view.window else {
+                self.hasPendingUpdates = true
+                return
+            }
+
+            // execute code on the main thread if the view is visible
+            handler()
+        }
     }
 }
